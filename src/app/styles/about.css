@@ -1,0 +1,238 @@
+/* ─────────────────────────────────────────────
+   HSM Company Profile – About Section Style (Sharp Grid Edition)
+   ───────────────────────────────────────────── */
+
+.about {
+  background-color: var(--color-bg-secondary);
+  padding: clamp(4rem, 8vw, 8rem) var(--page-padding-x);
+  border-top: 1px solid var(--color-border);
+  position: relative;
+}
+
+.about__container {
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+}
+
+/* Row 1: Header + Description */
+.about__header {
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 2.5rem;
+  margin-bottom: clamp(3.5rem, 6vw, 6rem);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 3rem;
+}
+
+.about__header-left {
+  flex: 1 1 500px;
+}
+
+.about__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--color-accent);
+  font-family: monospace;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  margin-bottom: 16px;
+}
+
+.about__eyebrow-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--color-accent);
+  box-shadow: 0 0 8px var(--color-accent);
+  animation: pulse 2s infinite;
+}
+
+.about__heading {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--color-text-primary);
+  letter-spacing: var(--letter-spacing-tight);
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.about__header-right {
+  flex: 1 1 400px;
+  max-width: 480px;
+  border: 1px solid var(--color-border);
+  padding: 2rem;
+  background-color: var(--color-bg-card);
+  position: relative;
+}
+
+/* Sharp corner technical markers */
+.about__header-right::before {
+  content: "+";
+  position: absolute;
+  top: -11px;
+  left: -6px;
+  color: var(--color-accent);
+  font-family: monospace;
+  font-size: 1.25rem;
+}
+
+.about__header-right::after {
+  content: "+";
+  position: absolute;
+  bottom: -13px;
+  right: -6px;
+  color: var(--color-accent);
+  font-family: monospace;
+  font-size: 1.25rem;
+}
+
+.about__description {
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  font-size: 0.95rem;
+  text-align: justify;
+  margin: 0;
+}
+
+.about__grid-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 1.25rem;
+  margin-bottom: 2.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.about__grid-title h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+  margin: 0;
+}
+
+.about__grid-title span {
+  font-family: monospace;
+  font-size: 0.75rem;
+  color: var(--color-accent);
+  letter-spacing: 0.1em;
+}
+
+@media (max-width: 640px) {
+  .about__grid-title {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+  }
+}
+
+/* Row 3: Grid 4 Pillars (Unified Table-like Border Collapse layout) */
+.about__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-border);
+  /* Serves as grid separator lines */
+  gap: 1px;
+}
+
+.about-card {
+  background-color: var(--color-bg-card);
+  padding: 3.5rem 2rem;
+  transition: background-color 0.25s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.about-card:hover {
+  background-color: var(--color-bg-primary);
+}
+
+.about-card__meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.about-card__num {
+  font-family: monospace;
+  color: var(--color-accent);
+  font-size: 0.875rem;
+}
+
+.about-card__icon-wrapper {
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+}
+
+.about-card:hover .about-card__icon-wrapper {
+  color: var(--color-accent);
+}
+
+.about-card h3 {
+  color: var(--color-text-primary);
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-bottom: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+.about-card p {
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .about__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .about__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .about__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    padding-bottom: 1.5rem;
+    margin-bottom: 2.5rem;
+  }
+}
+
+/* ── Hybrid Theme Overrides ── */
+.theme-hybrid .about-card {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+.theme-hybrid .about-card h3 {
+  color: #ffffff;
+}
+.theme-hybrid .about-card p,
+.theme-hybrid .about__description {
+  color: #e2e8f0;
+}
+.theme-hybrid .about-card__icon-wrapper {
+  color: #e2e8f0;
+}
+.theme-hybrid .about-card:hover {
+  border-color: var(--color-accent);
+}
