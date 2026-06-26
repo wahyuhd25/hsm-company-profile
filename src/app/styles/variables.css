@@ -1,0 +1,30 @@
+:root {
+  /* Color Palette */
+  --color-bg-primary: #1c2b3a;
+  --color-bg-secondary: #243447;
+  --color-bg-card: #2a3d52;
+  --color-bg-stats: #2e4158;
+  --color-accent: #d4f53c;
+  --color-accent-hover: #c0e02e;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #a8bfd4;
+  --color-text-muted: #7a9ab5;
+  --color-border: rgba(255, 255, 255, 0.08);
+
+  /* Typography */
+  --font-family: var(--font-plus-jakarta), 'Plus Jakarta Sans', system-ui, sans-serif;
+  --letter-spacing-tight: -0.04em;
+  --letter-spacing-normal: -0.02em;
+  --letter-spacing-wide: -0.01em;
+
+  /* Spacing & Layout */
+  --nav-height: 72px;
+  --container-max-width: 1280px;
+  --page-padding-x: clamp(1.5rem, 6vw, 6rem);
+}
+
+@media (max-width: 480px) {
+  :root {
+    --page-padding-x: 1rem;
+  }
+}
