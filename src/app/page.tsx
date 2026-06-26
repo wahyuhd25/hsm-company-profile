@@ -1,5 +1,6 @@
 import Navbar from "./components/Navbar";
 import Image from "next/image";
+import ThemeSwitcher from "./components/ThemeSwitcher";
 
 export default function Home() {
   return (
@@ -107,6 +108,109 @@ export default function Home() {
           </div>
         </section>
       </main>
+
+      {/* ── About Section ── */}
+      <section className="about" id="tentang" aria-label="Tentang Kami">
+        <div className="about__container">
+          
+          {/* Row 1: Header + Description */}
+          <div className="about__header">
+            <div className="about__header-left">
+              <div className="about__eyebrow">
+                <span className="about__eyebrow-dot" /> Tentang Kami
+              </div>
+              <h2 className="about__heading">
+                Judul Utama Tentang Kami / Misi Perusahaan
+              </h2>
+            </div>
+            <div className="about__header-right">
+              <p className="about__description">
+                Tulis deskripsi pengantar atau profil singkat perusahaan Anda di sini. Jelaskan secara ringkas nilai utama, komitmen, atau fokus operasional perusahaan yang ingin ditonjolkan kepada calon mitra.
+              </p>
+            </div>
+          </div>
+
+          {/* Grid Title Header */}
+          <div className="about__grid-title">
+            <h3>Misi & Komitmen Kami</h3>
+            <span>TRUSTED PARTNER IN ORTHOPEDICS</span>
+          </div>
+
+          {/* Row 2: Grid 4 Pillars */}
+          <div className="about__grid">
+            
+            {/* Card 1: Misi / Komitmen 1 */}
+            <div className="about-card">
+              <div className="about-card__meta">
+                <span className="about-card__num">[ 01 ]</span>
+                <div className="about-card__icon-wrapper">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                  </svg>
+                </div>
+              </div>
+              <h3>Misi / Komitmen 1</h3>
+              <p>Tulis penjelasan singkat mengenai poin misi atau komitmen pertama Anda di sini untuk memberikan informasi detail kepada pengunjung.</p>
+            </div>
+
+            {/* Card 2: Misi / Komitmen 2 */}
+            <div className="about-card">
+              <div className="about-card__meta">
+                <span className="about-card__num">[ 02 ]</span>
+                <div className="about-card__icon-wrapper">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                  </svg>
+                </div>
+              </div>
+              <h3>Misi / Komitmen 2</h3>
+              <p>Tulis penjelasan singkat mengenai poin misi atau komitmen kedua Anda di sini untuk memberikan informasi detail kepada pengunjung.</p>
+            </div>
+
+            {/* Card 3: Misi / Komitmen 3 */}
+            <div className="about-card">
+              <div className="about-card__meta">
+                <span className="about-card__num">[ 03 ]</span>
+                <div className="about-card__icon-wrapper">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <line x1="16.5" y1="9.4" x2="7.5" y2="4.21" />
+                    <polygon points="12 22.08 12 12 3 6.92 3 17.08 12 22.08" />
+                    <polygon points="12 12 21 6.92 21 17.08 12 22.08" />
+                    <polygon points="12 2 21 6.92 12 12 3 6.92 12 2" />
+                    <line x1="12" y1="22.08" x2="12" y2="12" />
+                  </svg>
+                </div>
+              </div>
+              <h3>Misi / Komitmen 3</h3>
+              <p>Tulis penjelasan singkat mengenai poin misi atau komitmen ketiga Anda di sini untuk memberikan informasi detail kepada pengunjung.</p>
+            </div>
+
+            {/* Card 4: Misi / Komitmen 4 */}
+            <div className="about-card">
+              <div className="about-card__meta">
+                <span className="about-card__num">[ 04 ]</span>
+                <div className="about-card__icon-wrapper">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <rect x="1" y="3" width="15" height="13" />
+                    <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
+                    <circle cx="5.5" cy="18.5" r="2.5" />
+                    <circle cx="18.5" cy="18.5" r="2.5" />
+                  </svg>
+                </div>
+              </div>
+              <h3>Misi / Komitmen 4</h3>
+              <p>Tulis penjelasan singkat mengenai poin misi atau komitmen keempat Anda di sini untuk memberikan informasi detail kepada pengunjung.</p>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* ── Dev Theme Switcher Button ── */}
+      <ThemeSwitcher />
     </>
   );
 }
