@@ -209,12 +209,20 @@
 
 .catalog__sub-content {
   min-height: 0;
-  padding: 3rem 2.5rem;
-  border-top: 1px solid var(--color-border);
-  border-bottom: 1px solid var(--color-border);
+  padding: 0 2.5rem;
+  border-top: 0px solid var(--color-border);
+  border-bottom: 0px solid var(--color-border);
   background-color: var(--color-bg-secondary);
   display: flex;
   flex-direction: column;
+  gap: 0;
+  transition: padding 0.3s ease, gap 0.3s ease, border-width 0.3s ease;
+}
+
+.catalog__sub-drawer.is-open .catalog__sub-content {
+  padding: 3rem 2.5rem;
+  border-top-width: 1px;
+  border-bottom-width: 1px;
   gap: 1.5rem;
 }
 
@@ -320,6 +328,10 @@
   }
   
   .catalog__sub-content {
+    padding: 0 1.75rem;
+  }
+  
+  .catalog__sub-drawer.is-open .catalog__sub-content {
     padding: 2.5rem 1.75rem;
   }
 }
