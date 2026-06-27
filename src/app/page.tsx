@@ -1,6 +1,7 @@
 import Navbar from "./components/Navbar";
 import Image from "next/image";
 import ThemeSwitcher from "./components/ThemeSwitcher";
+import Katalog from "./components/Katalog";
 
 export default function Home() {
   return (
@@ -208,6 +209,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* ── Catalog Section ── */}
+      <Katalog />
 
       {/* ── Dev Theme Switcher Button ── */}
       <ThemeSwitcher />
