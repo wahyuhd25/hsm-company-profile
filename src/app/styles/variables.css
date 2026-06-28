@@ -3,7 +3,7 @@
   --color-bg-primary: #ffffff;
   --color-bg-secondary: #f8fafc;
   --color-bg-card: #ffffff;
-  --color-bg-stats: #f1f5f9;
+  --color-bg-stats: #ffffff;
   --color-accent: #00a86b; /* Premium medical emerald green */
   --color-accent-hover: #00875a;
   --color-text-primary: #0f172a;
@@ -12,6 +12,7 @@
   --color-border: rgba(15, 23, 42, 0.08);
   --color-btn-text: #ffffff; /* White text for contrast on green background */
   --color-accent-shadow: rgba(0, 168, 107, 0.4);
+  --color-nav-scrolled-bg: rgba(255, 255, 255, 0.88);
 
   /* Typography */
   --font-family: var(--font-plus-jakarta), 'Plus Jakarta Sans', system-ui, sans-serif;
@@ -47,6 +48,7 @@
   --color-border: rgba(255, 255, 255, 0.08);
   --color-btn-text: #0d1a26; /* Dark slate text for contrast on neon lime */
   --color-accent-shadow: rgba(212, 245, 60, 0.6);
+  --color-nav-scrolled-bg: rgba(28, 43, 58, 0.88);
 }
 
 /* Theme Emerald (Dark Forest Green) */
@@ -63,4 +65,5 @@
   --color-border: rgba(0, 230, 118, 0.08);
   --color-btn-text: #0a1412; /* Dark text for contrast on bright neon emerald */
   --color-accent-shadow: rgba(0, 230, 118, 0.6);
+  --color-nav-scrolled-bg: rgba(17, 32, 29, 0.88);
 }
