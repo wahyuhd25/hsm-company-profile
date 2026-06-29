@@ -2,6 +2,8 @@ import Navbar from "./components/Navbar";
 import Image from "next/image";
 import ThemeSwitcher from "./components/ThemeSwitcher";
 import Katalog from "./components/Katalog";
+import Kontak from "./components/Kontak";
+
 
 export default function Home() {
   return (
@@ -212,6 +214,9 @@ export default function Home() {
 
       {/* ── Catalog Section ── */}
       <Katalog />
+
+      {/* ── Contact Section ── */}
+      <Kontak />
 
       {/* ── Dev Theme Switcher Button ── */}
       <ThemeSwitcher />

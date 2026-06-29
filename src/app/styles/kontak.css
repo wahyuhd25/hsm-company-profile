@@ -1,0 +1,421 @@
+/* ─────────────────────────────────────────────
+   HSM Company Profile – Contact Section Style (Sharp Grid Edition)
+   ───────────────────────────────────────────── */
+
+.kontak {
+  background-color: var(--color-bg-secondary);
+  padding: clamp(4rem, 8vw, 8rem) var(--page-padding-x);
+  border-top: 1px solid var(--color-border);
+  position: relative;
+}
+
+.kontak__container {
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+}
+
+/* Header Section */
+.kontak__header {
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 2.5rem;
+  margin-bottom: clamp(3.5rem, 6vw, 6rem);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 3rem;
+}
+
+.kontak__header-left {
+  flex: 1 1 500px;
+}
+
+.kontak__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--color-accent);
+  font-family: monospace;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  margin-bottom: 16px;
+}
+
+.kontak__eyebrow-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--color-accent);
+  box-shadow: 0 0 8px var(--color-accent);
+  animation: pulse 2s infinite;
+}
+
+.kontak__heading {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--color-text-primary);
+  letter-spacing: var(--letter-spacing-tight);
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.kontak__header-right {
+  flex: 1 1 400px;
+  max-width: 480px;
+  border: 1px solid var(--color-border);
+  padding: 2rem;
+  background-color: var(--color-bg-card);
+  position: relative;
+}
+
+/* Sharp corner markers */
+.kontak__header-right::before {
+  content: "+";
+  position: absolute;
+  top: -11px;
+  left: -6px;
+  color: var(--color-accent);
+  font-family: monospace;
+  font-size: 1.25rem;
+}
+
+.kontak__header-right::after {
+  content: "+";
+  position: absolute;
+  bottom: -13px;
+  right: -6px;
+  color: var(--color-accent);
+  font-family: monospace;
+  font-size: 1.25rem;
+}
+
+.kontak__description {
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  font-size: 0.95rem;
+  text-align: justify;
+  margin: 0;
+}
+
+/* Main Grid Layout */
+.kontak__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3rem;
+  margin-bottom: 4rem;
+}
+
+@media (min-width: 992px) {
+  .kontak__grid {
+    grid-template-columns: 1fr 1.2fr;
+    gap: 4rem;
+  }
+}
+
+/* Left Column: Info Cards */
+.kontak__info {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.kontak__card {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  padding: 2rem;
+  display: flex;
+  gap: 1.5rem;
+  position: relative;
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.kontak__card:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-accent);
+  box-shadow: 0 10px 30px -15px var(--color-accent-shadow);
+}
+
+.kontak__card-num {
+  font-family: monospace;
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+}
+
+.kontak__card-icon {
+  flex-shrink: 0;
+  width: 3.5rem;
+  height: 3.5rem;
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-accent);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.kontak__card:hover .kontak__card-icon {
+  background-color: var(--color-accent);
+  color: var(--color-btn-text);
+  border-color: var(--color-accent);
+}
+
+.kontak__card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.kontak__card-content h3 {
+  font-size: 1.125rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--color-text-primary);
+  margin: 0;
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+.kontak__card-content p {
+  font-size: 0.95rem;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.kontak__card-link {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-accent);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  transition: color 0.2s ease;
+}
+
+.kontak__card-link:hover {
+  color: var(--color-accent-hover);
+}
+
+/* Right Column: Form */
+.kontak__form-wrapper {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  padding: clamp(2rem, 4vw, 3rem);
+  position: relative;
+}
+
+/* Form Grid Markers */
+.kontak__form-wrapper::before {
+  content: "+";
+  position: absolute;
+  top: -11px;
+  right: -6px;
+  color: var(--color-accent);
+  font-family: monospace;
+  font-size: 1.25rem;
+}
+
+.kontak__form-wrapper::after {
+  content: "+";
+  position: absolute;
+  bottom: -13px;
+  left: -6px;
+  color: var(--color-accent);
+  font-family: monospace;
+  font-size: 1.25rem;
+}
+
+.kontak__form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.kontak__form-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.75rem;
+}
+
+@media (min-width: 576px) {
+  .kontak__form-row {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.kontak__form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.kontak__form-group label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-text-secondary);
+}
+
+.kontak__form-group input,
+.kontak__form-group textarea {
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  padding: 0.875rem 1.25rem;
+  color: var(--color-text-primary);
+  font-family: inherit;
+  font-size: 0.95rem;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  width: 100%;
+}
+
+.kontak__form-group input:focus,
+.kontak__form-group textarea:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-shadow);
+}
+
+.kontak__form-group textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+/* Submit Button */
+.kontak__btn-submit {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  background-color: var(--color-accent);
+  color: var(--color-btn-text);
+  border: none;
+  padding: 1rem 2rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: background-color 0.25s ease, transform 0.2s ease, box-shadow 0.25s ease;
+  width: 100%;
+}
+
+@media (min-width: 576px) {
+  .kontak__btn-submit {
+    width: auto;
+  }
+}
+
+.kontak__btn-submit:hover:not(:disabled) {
+  background-color: var(--color-accent-hover);
+  box-shadow: 0 8px 24px -8px var(--color-accent-shadow);
+  transform: translateY(-1px);
+}
+
+.kontak__btn-submit:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.kontak__btn-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.kontak__btn-submit svg {
+  transition: transform 0.25s ease;
+}
+
+.kontak__btn-submit:hover:not(:disabled) svg {
+  transform: translateX(3px);
+}
+
+/* Form Status Messages */
+.kontak__status {
+  padding: 1rem 1.25rem;
+  border-left: 3px solid;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.kontak__status--success {
+  background-color: rgba(16, 185, 129, 0.08);
+  border-color: #10b981;
+  color: #10b981;
+}
+
+.kontak__status--error {
+  background-color: rgba(239, 68, 68, 0.08);
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+/* Bottom Map Section */
+.kontak__map-container {
+  border: 1px solid var(--color-border);
+  padding: 0.5rem;
+  background-color: var(--color-bg-card);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Map Technical Markers */
+.kontak__map-container::before {
+  content: "+";
+  position: absolute;
+  top: -11px;
+  left: -6px;
+  color: var(--color-accent);
+  font-family: monospace;
+  font-size: 1.25rem;
+  z-index: 2;
+}
+
+.kontak__map-container::after {
+  content: "+";
+  position: absolute;
+  bottom: -13px;
+  right: -6px;
+  color: var(--color-accent);
+  font-family: monospace;
+  font-size: 1.25rem;
+  z-index: 2;
+}
+
+.kontak__map-wrapper {
+  position: relative;
+  padding-bottom: 35%; /* Wide Aspect Ratio */
+  height: 0;
+  overflow: hidden;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .kontak__map-wrapper {
+    padding-bottom: 56.25%; /* 16:9 for smaller devices */
+  }
+}
+
+.kontak__map-wrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  filter: grayscale(0.2) contrast(1.1);
+  transition: filter 0.3s ease;
+}
+
+/* Dark mode styling adaptation for Map */
+:root.theme-dark .kontak__map-wrapper iframe,
+:root.theme-emerald .kontak__map-wrapper iframe {
+  filter: invert(90%) hue-rotate(180deg) grayscale(0.5) contrast(1.2);
+}
