@@ -1,0 +1,323 @@
+/* ================================================
+   Login Page — Light Emerald Green & Sharp Edge UI
+   ================================================ */
+
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8fafc;
+  position: relative;
+  overflow: hidden;
+  padding: 1.5rem;
+  font-family: var(--font-family, "Plus Jakarta Sans", sans-serif);
+}
+
+/* --- Technical Grid lines to fit PT Hartindo style --- */
+.grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(15, 23, 42, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 23, 42, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+}
+
+/* --- Floating Back Button --- */
+.backButton {
+  position: absolute;
+  top: 2rem;
+  left: 2rem;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #475569;
+  text-decoration: none;
+  padding: 0.75rem 1rem;
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 0px; /* Sharp edge */
+  transition: all 0.15s ease-in-out;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.backButton:hover {
+  color: #00a86b;
+  border-color: #00a86b;
+  background: #f0fdf4;
+  transform: translateX(-4px);
+}
+
+.backButton svg {
+  transition: transform 0.15s;
+}
+
+/* --- Card --- */
+.card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 440px;
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 0px; /* Sharp edge */
+  padding: 2.5rem;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.05),
+    0 2px 4px -1px rgba(0, 0, 0, 0.03),
+    0 20px 25px -5px rgba(0, 0, 0, 0.05);
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* --- Brand section --- */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  margin-bottom: 2rem;
+}
+
+.logoRing {
+  width: 52px;
+  height: 52px;
+  border-radius: 0px; /* Sharp edge */
+  background: rgba(0, 168, 107, 0.1);
+  border: 1px solid rgba(0, 168, 107, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.brandName {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.brandSub {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin: 0;
+  margin-top: 2px;
+}
+
+/* --- Heading --- */
+.heading {
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.04em;
+  margin: 0 0 0.5rem;
+}
+
+.subtitle {
+  font-size: 0.875rem;
+  color: #475569;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* --- Form --- */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #475569;
+  letter-spacing: 0.01em;
+}
+
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.inputIcon {
+  position: absolute;
+  left: 14px;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+  transition: color 0.15s;
+}
+
+.input {
+  width: 100%;
+  padding: 0.8125rem 1rem 0.8125rem 2.75rem;
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: 0px; /* Sharp edge */
+  color: #0f172a;
+  font-size: 0.9375rem;
+  font-family: inherit;
+  outline: none;
+  transition: all 0.15s ease-in-out;
+}
+
+.input::placeholder {
+  color: #94a3b8;
+}
+
+.input:focus {
+  border-color: #00a86b;
+  box-shadow: 0 0 0 3px rgba(0, 168, 107, 0.12);
+}
+
+.input:focus ~ .inputIcon,
+.inputWrapper:focus-within .inputIcon {
+  color: #00a86b;
+}
+
+.input:disabled {
+  background: #f1f5f9;
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* --- Error Box --- */
+.errorBox {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.875rem 1rem;
+  background: #fef2f2;
+  border: 1px solid #fee2e2;
+  border-radius: 0px; /* Sharp edge */
+  color: #b91c1c;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  animation: shake 0.4s ease;
+}
+
+.errorBox svg {
+  flex-shrink: 0;
+  color: #ef4444;
+}
+
+/* --- Submit button --- */
+.submitBtn {
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  padding: 0.875rem 1.5rem;
+  background: #00a86b;
+  border: none;
+  border-radius: 0px; /* Sharp edge */
+  color: #ffffff;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  box-shadow: 0 2px 4px rgba(0, 168, 107, 0.15);
+  letter-spacing: -0.01em;
+}
+
+.submitBtn:hover:not(:disabled) {
+  background: #00875a;
+  box-shadow: 0 4px 8px rgba(0, 168, 107, 0.25);
+}
+
+.submitBtn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.submitBtn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* --- Spinner --- */
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+/* --- Footer note --- */
+.footer {
+  margin-top: 1.75rem;
+  text-align: center;
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+/* ================================================
+   Keyframes
+   ================================================ */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.98) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
+/* --- Responsive --- */
+@media (max-width: 640px) {
+  .backButton {
+    position: static;
+    margin-bottom: 1.5rem;
+    align-self: flex-start;
+  }
+  .container {
+    justify-content: flex-start;
+    padding-top: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .card {
+    padding: 2rem 1.5rem;
+  }
+  .title {
+    font-size: 1.5rem;
+  }
+}
