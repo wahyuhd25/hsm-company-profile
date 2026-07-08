@@ -2,25 +2,30 @@
 
 import { useEffect, useState } from "react";
 
+const themes = [
+  "",
+  "theme-dark",
+  "theme-emerald",
+];
+
+const themeNames: Record<string, string> = {
+  "": "Light Green",
+  "theme-dark": "Dark Slate",
+  "theme-emerald": "Dark Forest",
+};
+
 export default function ThemeSwitcher() {
   const [activeTheme, setActiveTheme] = useState("Light Green");
-
-  const themes = [
-    "",
-    "theme-dark",
-    "theme-emerald",
-  ];
-  
-  const themeNames: Record<string, string> = {
-    "": "Light Green",
-    "theme-dark": "Dark Slate",
-    "theme-emerald": "Dark Forest",
-  };
 
   useEffect(() => {
     const currentClass = document.documentElement.className || "";
     const currentTheme = themes.find((t) => t && currentClass.includes(t)) || "";
-    setActiveTheme(themeNames[currentTheme]);
+    const name = themeNames[currentTheme];
+    
+    const handle = requestAnimationFrame(() => {
+      setActiveTheme(name);
+    });
+    return () => cancelAnimationFrame(handle);
   }, []);
 
   const cycleTheme = () => {

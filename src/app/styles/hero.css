@@ -3,16 +3,17 @@
   position: relative;
   min-height: 100vh;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
+  /* Align content towards top near navbar */
   justify-content: center;
   background-color: var(--color-bg-primary);
-  background-image: 
-    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-image:
+    linear-gradient(rgba(15, 23, 42, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 23, 42, 0.035) 1px, transparent 1px);
   background-size: 60px 60px;
   background-position: center top;
   overflow: hidden;
-  padding: calc(var(--nav-height) + 3rem) var(--page-padding-x) 3rem var(--page-padding-x);
+  padding: calc(var(--nav-height) + 3.5rem) var(--page-padding-x) 3rem var(--page-padding-x);
 }
 
 .hero__inner {
@@ -42,10 +43,25 @@
   line-height: 1;
 }
 
-.hero__inner-marker-tl { top: -9px; left: -6px; }
-.hero__inner-marker-tr { top: -9px; right: -6px; }
-.hero__inner-marker-bl { bottom: -9px; left: -6px; }
-.hero__inner-marker-br { bottom: -9px; right: -6px; }
+.hero__inner-marker-tl {
+  top: -9px;
+  left: -6px;
+}
+
+.hero__inner-marker-tr {
+  top: -9px;
+  right: -6px;
+}
+
+.hero__inner-marker-bl {
+  bottom: -9px;
+  left: -6px;
+}
+
+.hero__inner-marker-br {
+  bottom: -9px;
+  right: -6px;
+}
 
 /* Left panel */
 .hero__left {
@@ -170,7 +186,7 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   border-top: 1px solid var(--color-border);
-  background: rgba(28, 43, 58, 0.3);
+  background: var(--color-bg-stats);
 }
 
 .hero__stats .stat-item {
@@ -243,10 +259,10 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, 
-    rgba(28, 43, 58, 0.7) 0%, 
-    rgba(28, 43, 58, 0.1) 40%, 
-    transparent 100%);
+  background: linear-gradient(to top,
+      rgba(28, 43, 58, 0.7) 0%,
+      rgba(28, 43, 58, 0.1) 40%,
+      transparent 100%);
   z-index: 1;
   pointer-events: none;
 }
@@ -314,9 +330,11 @@
   0% {
     left: -100%;
   }
+
   50% {
     left: 0;
   }
+
   100% {
     left: 100%;
   }
@@ -389,7 +407,8 @@
     gap: 0.75rem;
   }
 
-  .btn-primary, .btn-secondary {
+  .btn-primary,
+  .btn-secondary {
     justify-content: center;
     padding: 0.85rem 1.5rem;
   }
@@ -405,7 +424,7 @@
   .hero__stats .stat-item {
     padding: 1.25rem 1rem;
   }
-  
+
   .hero__stats .stat-item:not(:last-child) {
     border-right: none;
     border-bottom: 1px solid var(--color-border);
@@ -421,4 +440,55 @@
     padding: 0.4rem 0.8rem;
     font-size: 0.7rem;
   }
+}
+
+/* ── Hero Stats Value Propositions Modifier ── */
+.hero__stats--values {
+  position: relative;
+  transform: translateY(-12px);
+  /* Shifts the box up slightly */
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.03);
+}
+
+.hero__stats--values .stat-item {
+  padding: 1.125rem 1.25rem;
+  /* Clean, compact padding */
+  display: flex;
+  flex-direction: row;
+  /* Side-by-side icon and text */
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  /* Breathable spacing */
+}
+
+.hero__stats--values .stat-icon {
+  color: var(--color-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.hero__stats--values .stat-icon svg {
+  width: 18px;
+  /* Slightly smaller and cleaner icon size */
+  height: 18px;
+}
+
+.hero__stats--values .stat-item:hover .stat-icon {
+  transform: scale(1.15);
+}
+
+.hero__stats--values .stat-number {
+  font-size: 0.8125rem;
+  /* Smaller font size to prevent cluttered look */
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--color-text-primary);
+  letter-spacing: 0.1em;
+  /* Elegant spaced typography */
+  line-height: 1;
 }

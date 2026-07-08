@@ -1,0 +1,104 @@
+// ============================================================
+// Prisma Schema — PT. Hartindo Surya Medika
+// ============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")   // Pooler (runtime)
+  directUrl = env("DIRECT_URL")     // Direct (migrate/push)
+}
+
+// ============================================================
+// KATALOG
+// ============================================================
+
+model Manufacturer {
+  id         Int        @id @default(autoincrement())
+  name       String
+  slug       String     @unique
+  logoUrl    String?    // URL logo manufakturer
+  desc       String?    // Deskripsi singkat
+  categories Category[]
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  @@map("manufacturers")
+}
+
+model Category {
+  id             Int           @id @default(autoincrement())
+  num            String        // Nomor tampilan, misal "[ 01 ]"
+  name           String
+  desc           String
+  imageUrl       String?       // URL gambar untuk card kategori di publik
+  manufacturerId Int?          // Relasi ke manufakturer
+  manufacturer   Manufacturer? @relation(fields: [manufacturerId], references: [id], onDelete: SetNull)
+  subCategories  SubCategory[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@map("categories")
+}
+
+model SubCategory {
+  id         Int      @id @default(autoincrement())
+  num        String   // Nomor tampilan, misal "01.A"
+  name       String
+  desc       String
+  categoryId Int
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  products   Product[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("sub_categories")
+}
+
+model Product {
+  id            Int         @id @default(autoincrement())
+  kodeBarang    String?     // Kode produk, misal "MNI-028"
+  name          String
+  description   String?
+  imageUrl      String?
+  subCategoryId Int
+  subCategory   SubCategory @relation(fields: [subCategoryId], references: [id], onDelete: Cascade)
+  isActive      Boolean     @default(true)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@map("products")
+}
+
+// ============================================================
+// KONTAK / PESAN MASUK
+// ============================================================
+
+model ContactMessage {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  phone     String?
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@map("contact_messages")
+}
+
+// ============================================================
+// ADMIN / PENGELOLA (CUSTOM AUTH)
+// ============================================================
+
+model Admin {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String   // Hashed password
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("admins")
+}
