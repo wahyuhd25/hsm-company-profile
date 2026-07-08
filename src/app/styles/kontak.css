@@ -4,6 +4,10 @@
 
 .kontak {
   background-color: var(--color-bg-secondary);
+  background-image: 
+    linear-gradient(rgba(15, 23, 42, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 23, 42, 0.035) 1px, transparent 1px);
+  background-size: 60px 60px;
   padding: clamp(4rem, 8vw, 8rem) var(--page-padding-x);
   border-top: 1px solid var(--color-border);
   position: relative;
@@ -366,28 +370,7 @@
   overflow: hidden;
 }
 
-/* Map Technical Markers */
-.kontak__map-container::before {
-  content: "+";
-  position: absolute;
-  top: -11px;
-  left: -6px;
-  color: var(--color-accent);
-  font-family: monospace;
-  font-size: 1.25rem;
-  z-index: 2;
-}
-
-.kontak__map-container::after {
-  content: "+";
-  position: absolute;
-  bottom: -13px;
-  right: -6px;
-  color: var(--color-accent);
-  font-family: monospace;
-  font-size: 1.25rem;
-  z-index: 2;
-}
+/* Map Technical Markers Removed */
 
 .kontak__map-wrapper {
   position: relative;

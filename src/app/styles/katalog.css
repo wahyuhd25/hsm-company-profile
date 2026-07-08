@@ -1,9 +1,14 @@
 /* ─────────────────────────────────────────────
-   HSM Company Profile – Catalog Section Style (Sharp Grid Edition)
+   HSM Company Profile – Catalog Section Style
+   Manufacturer Card Grid Edition
    ───────────────────────────────────────────── */
 
 .catalog {
   background-color: var(--color-bg-primary);
+  background-image: 
+    linear-gradient(rgba(15, 23, 42, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 23, 42, 0.035) 1px, transparent 1px);
+  background-size: 60px 60px;
   padding: clamp(4rem, 8vw, 8rem) var(--page-padding-x);
   border-top: 1px solid var(--color-border);
   position: relative;
@@ -18,7 +23,7 @@
 .catalog__header {
   border-bottom: 1px solid var(--color-border);
   padding-bottom: 2.5rem;
-  margin-bottom: clamp(3.5rem, 6vw, 6rem);
+  margin-bottom: clamp(3rem, 5vw, 5rem);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -54,7 +59,7 @@
 .catalog__heading {
   font-size: clamp(2rem, 4vw, 3rem);
   font-weight: 800;
-  line-height: 1.1;
+  line-height: 1.15;
   color: var(--color-text-primary);
   letter-spacing: var(--letter-spacing-tight);
   text-transform: uppercase;
@@ -99,239 +104,117 @@
   margin: 0;
 }
 
-/* Grid layout with border separator simulation using gap and background border */
-.catalog__grid {
+/* ── Manufacturer Card Grid ───────────────────────── */
+
+.catalog__mfr-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  border: 1px solid var(--color-border);
-  background-color: var(--color-border);
-  gap: 1px;
-  position: relative;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
 }
 
-/* Category Card Styling */
-.catalog-card {
-  background-color: var(--color-bg-card);
-  padding: 3rem 2.5rem;
-  cursor: pointer;
-  transition: background-color 0.25s ease, border-color 0.25s ease;
+.catalog__mfr-card {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  height: 100%;
+  background-color: var(--color-bg-card);
+  border: 1px solid #cbd5e1; /* High contrast border outline */
+  padding: 2.5rem 2rem;
+  text-decoration: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
   position: relative;
-  outline: none;
-  border: none;
-  text-align: left;
-  font-family: inherit;
-}
-
-.catalog-card:hover,
-.catalog-card:focus-visible {
-  background-color: var(--color-bg-secondary);
-}
-
-.catalog-card.is-active {
-  background-color: var(--color-bg-secondary);
-}
-
-/* Accent top line on active card */
-.catalog-card.is-active::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 3px;
-  background-color: var(--color-accent);
-}
-
-.catalog-card__meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-}
-
-.catalog-card__num {
-  font-family: monospace;
-  color: var(--color-accent);
-  font-size: 0.875rem;
-}
-
-.catalog-card__indicator {
-  font-size: 1.25rem;
-  color: var(--color-text-muted);
-  font-family: monospace;
-  transition: transform 0.3s ease, color 0.3s ease;
-}
-
-.catalog-card:hover .catalog-card__indicator {
-  color: var(--color-accent);
-}
-
-.catalog-card.is-active .catalog-card__indicator {
-  transform: rotate(45deg);
-  color: var(--color-accent);
-}
-
-.catalog-card h3 {
-  color: var(--color-text-primary);
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin-bottom: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: var(--letter-spacing-wide);
-}
-
-.catalog-card p {
-  color: var(--color-text-secondary);
-  font-size: 0.9rem;
-  line-height: 1.6;
-  margin: 0;
-}
-
-/* Expansion Drawer */
-.catalog__sub-drawer {
-  grid-column: 1 / -1;
-  display: grid;
-  grid-template-rows: 0fr;
-  transition: grid-template-rows 0.3s ease, opacity 0.3s ease, padding 0.3s ease;
-  opacity: 0;
   overflow: hidden;
-  background-color: var(--color-bg-secondary);
 }
 
-.catalog__sub-drawer.is-open {
-  grid-template-rows: 1fr;
-  opacity: 1;
-}
 
-.catalog__sub-content {
-  min-height: 0;
-  padding: 0 2.5rem;
-  border-top: 0px solid var(--color-border);
-  border-bottom: 0px solid var(--color-border);
-  background-color: var(--color-bg-secondary);
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  transition: padding 0.3s ease, gap 0.3s ease, border-width 0.3s ease;
-}
-
-.catalog__sub-drawer.is-open .catalog__sub-content {
-  padding: 3rem 2.5rem;
-  border-top-width: 1px;
-  border-bottom-width: 1px;
-  gap: 1.5rem;
-}
-
-.catalog__sub-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid var(--color-border);
-  padding-bottom: 1rem;
-}
-
-.catalog__sub-title {
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: var(--color-text-primary);
-  text-transform: uppercase;
-  letter-spacing: var(--letter-spacing-wide);
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.catalog__sub-title::before {
-  content: "";
-  display: inline-block;
-  width: 4px;
-  height: 12px;
-  background-color: var(--color-accent);
-}
-
-.catalog__sub-count {
-  font-family: monospace;
-  font-size: 0.8rem;
-  color: var(--color-text-muted);
-}
-
-/* Sub-category grid cards inside the drawer */
-.catalog__sub-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1.5rem;
-  margin-top: 0.5rem;
-}
-
-.catalog__sub-card {
-  background-color: var(--color-bg-card);
-  border: 1px solid var(--color-border);
-  padding: 2rem 1.5rem;
-  transition: border-color 0.25s ease, background-color 0.25s ease;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  min-height: 160px;
-}
-
-.catalog__sub-card:hover {
+.catalog__mfr-card:hover {
   border-color: var(--color-accent);
-  background-color: var(--color-bg-primary);
+  box-shadow: 0 8px 30px rgba(0, 168, 107, 0.1);
+  transform: translateY(-2px);
 }
 
-.catalog__sub-card-num {
-  font-family: monospace;
-  font-size: 0.75rem;
-  color: var(--color-text-muted);
-  margin-bottom: 1rem;
+/* Logo area */
+.catalog__mfr-logo-wrap {
+  width: 100%;
+  height: 130px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.75rem;
+  padding: 1rem;
+  background-color: var(--color-bg-secondary);
+  border: 1px solid #cbd5e1; /* High contrast border outline */
 }
 
-.catalog__sub-card h4 {
-  color: var(--color-text-primary);
-  font-size: 1.1rem;
+.catalog__mfr-logo {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.catalog__mfr-card:hover .catalog__mfr-logo {
+  transform: scale(1.05);
+}
+
+/* Manufacturer info */
+.catalog__mfr-info {
+  flex: 1;
+  margin-bottom: 1.5rem;
+}
+
+.catalog__mfr-name {
+  font-size: 1.05rem;
   font-weight: 700;
-  margin-bottom: 0.5rem;
+  color: var(--color-text-primary);
   text-transform: uppercase;
-  letter-spacing: var(--letter-spacing-wide);
+  letter-spacing: 0.04em;
+  margin: 0 0 0.5rem;
 }
 
-.catalog__sub-card p {
-  color: var(--color-text-secondary);
+.catalog__mfr-desc {
   font-size: 0.85rem;
+  color: var(--color-text-secondary);
   line-height: 1.5;
   margin: 0;
 }
 
-/* Responsive adjustments */
+/* Action link */
+.catalog__mfr-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-accent);
+  transition: gap 0.2s ease;
+}
+
+.catalog__mfr-card:hover .catalog__mfr-action {
+  gap: 0.75rem;
+}
+
+/* ── Responsive ─────────────────────────────────── */
 @media (max-width: 768px) {
-  .catalog__grid {
+  .catalog__header {
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .catalog__header-right {
+    max-width: 100%;
+  }
+
+  .catalog__mfr-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .catalog__mfr-logo-wrap {
+    height: 100px;
+  }
+}
+
+@media (max-width: 480px) {
+  .catalog__mfr-grid {
     grid-template-columns: 1fr;
-  }
-
-  .catalog-card[data-id="1"] { order: 1; }
-  .catalog-card[data-id="2"] { order: 3; }
-  .catalog-card[data-id="3"] { order: 5; }
-  .catalog-card[data-id="4"] { order: 7; }
-
-  .catalog__sub-drawer[data-drawer="1"] { order: 2; }
-  .catalog__sub-drawer[data-drawer="1"].active-cat-2 { order: 4; }
-
-  .catalog__sub-drawer[data-drawer="2"] { order: 6; }
-  .catalog__sub-drawer[data-drawer="2"].active-cat-4 { order: 8; }
-  
-  .catalog-card {
-    padding: 2.5rem 1.75rem;
-  }
-  
-  .catalog__sub-content {
-    padding: 0 1.75rem;
-  }
-  
-  .catalog__sub-drawer.is-open .catalog__sub-content {
-    padding: 2.5rem 1.75rem;
   }
 }
