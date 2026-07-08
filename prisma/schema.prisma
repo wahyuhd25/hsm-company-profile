@@ -16,14 +16,30 @@ datasource db {
 // KATALOG
 // ============================================================
 
+model Manufacturer {
+  id         Int        @id @default(autoincrement())
+  name       String
+  slug       String     @unique
+  logoUrl    String?    // URL logo manufakturer
+  desc       String?    // Deskripsi singkat
+  categories Category[]
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  @@map("manufacturers")
+}
+
 model Category {
-  id            Int           @id @default(autoincrement())
-  num           String        // Nomor tampilan, misal "[ 01 ]"
-  name          String
-  desc          String
-  subCategories SubCategory[]
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  id             Int           @id @default(autoincrement())
+  num            String        // Nomor tampilan, misal "[ 01 ]"
+  name           String
+  desc           String
+  imageUrl       String?       // URL gambar untuk card kategori di publik
+  manufacturerId Int?          // Relasi ke manufakturer
+  manufacturer   Manufacturer? @relation(fields: [manufacturerId], references: [id], onDelete: SetNull)
+  subCategories  SubCategory[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 
   @@map("categories")
 }
@@ -44,6 +60,7 @@ model SubCategory {
 
 model Product {
   id            Int         @id @default(autoincrement())
+  kodeBarang    String?     // Kode produk, misal "MNI-028"
   name          String
   description   String?
   imageUrl      String?
