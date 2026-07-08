@@ -84,7 +84,22 @@ export default async function AdminPage() {
           </p>
         </div>
 
-
+        {/* Menu Panel */}
+        <div className={styles.statsGrid}>
+          <a href="/admin/katalog" style={{ textDecoration: "none" }}>
+            <div className={styles.statCard} style={{ cursor: "pointer" }}>
+              <div className={styles.statIcon} data-color="green">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M3 3h18v4H3zM3 10h18v4H3zM3 17h18v4H3z"/>
+                </svg>
+              </div>
+              <div>
+                <p className={styles.statLabel}>Manajemen</p>
+                <p className={styles.statValue}>Katalog Produk</p>
+              </div>
+            </div>
+          </a>
+        </div>
       </main>
     </div>
   );
