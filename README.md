@@ -1,36 +1,41 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# HSM Company Profile
 
-## Getting Started
+This is a Next.js project for PT. Hartindo Surya Medika (HSM).
 
-First, run the development server:
+## Persiapan untuk Developer (Setup)
 
+Jika Anda baru saja melakukan pull/clone repository ini, ikuti langkah-langkah berikut agar aplikasi bisa berjalan normal di komputer Anda:
+
+### 1. Install Dependencies
+Buka terminal dan jalankan:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Setup Environment Variables (.env)
+File `.env` tidak dimasukkan ke dalam Git untuk alasan keamanan. Anda harus membuatnya sendiri secara lokal:
+- Copy file `.env.example` dan ubah namanya menjadi `.env`
+- Minta nilai untuk `DATABASE_URL`, `DIRECT_URL`, dan variabel Supabase lainnya kepada developer utama atau tim lead, lalu isi ke dalam file `.env` yang baru Anda buat.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 3. Setup Database (Prisma)
+Setelah `.env` disiapkan, Anda harus men-generate Prisma Client dan menyinkronkan database lokal:
+```bash
+npx prisma generate
+npx prisma db push
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+**(Opsional)** Jika Anda menggunakan database lokal/baru dan masih kosong, Anda bisa menjalankan script seed untuk mengisi data dummy (termasuk 8 katalog produk) dengan perintah:
+```bash
+npx prisma db seed
+```
 
-## Learn More
+### 4. Jalankan Aplikasi
+Jalankan development server:
+```bash
+npm run dev
+```
+Buka [http://localhost:3000](http://localhost:3000) pada browser Anda.
 
-To learn more about Next.js, take a look at the following resources:
+## Deploy
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Aplikasi ini bisa dengan mudah di-deploy di platform seperti Vercel. Pastikan Anda menyertakan seluruh Environment Variables yang ada di `.env` ke settingan Vercel saat melakukan deployment.
