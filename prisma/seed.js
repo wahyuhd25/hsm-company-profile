@@ -1,120 +1,172 @@
-const { PrismaClient } = require("@prisma/client");
+const { PrismaClient } = require('@prisma/client');
+const xlsx = require('xlsx');
+const path = require('path');
 const prisma = new PrismaClient();
 
-const PROD_IMG = "https://marthysorthopaedic.com/dist/produk/10.%20CLAVICLE%20HOOK%20LOCKING%20PLATE.png";
-const CAT_IMG = "https://marthysorthopaedic.com/dist/tipe_produk/4.png";
-
 async function main() {
-  console.log("Seeding database...");
+  const filePath = path.join(__dirname, '..', 'crawling', 'Marthys_Catalog_Import_Ready.xlsx');
+  console.log(`Reading Excel file from: ${filePath}`);
+  const workbook = xlsx.readFile(filePath);
 
-  // 1. Clean existing data
-  await prisma.product.deleteMany({});
-  await prisma.subCategory.deleteMany({});
-  await prisma.category.deleteMany({});
-  await prisma.manufacturer.deleteMany({});
+  // 1. Create Manufacturer
+  const manufacturer = await prisma.manufacturer.upsert({
+    where: { slug: 'marthys' },
+    update: {},
+    create: {
+      name: 'MARTHYS',
+      slug: 'marthys',
+      desc: 'Marthys Orthopaedic',
+      logoUrl: 'https://marthysorthopaedic.com/assets/images/logo%20web.png'
+    },
+  });
+  console.log(`Manufacturer created/found: ${manufacturer.name}`);
 
-  // 2. Data Manufakturer
-  const manufacturers = [
-    {
-      name: "Marthys Orthopaedics",
-      slug: "marthys",
-      logoUrl: "https://marthysorthopaedic.com/dist/logo/marthys1.png",
-      desc: "Spesialis produk implan ortopedi & instrumen bedah berkualitas tinggi",
-    },
-    {
-      name: "Mario Orthopedics",
-      slug: "mario",
-      logoUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQVScqf1ukt17-tRGuuRxstfQelOCL25y_LQWZhFQzots4NoOti-gE7-z0&s=10",
-      desc: "Manufakturer alat ortopedi terbaik di ambon kiri",
-    },
-    {
-      name: "Apex Surgical Solutions",
-      slug: "apex-surgical",
-      logoUrl: "https://placehold.co/200x200/2563eb/ffffff?text=Apex",
-      desc: "Solusi bedah inovatif untuk pemulihan optimal dengan presisi tinggi.",
-    },
-    {
-      name: "TitanMed Implants",
-      slug: "titanmed",
-      logoUrl: "https://placehold.co/200x200/0f172a/ffffff?text=TitanMed",
-      desc: "Implan titanium premium berstandar internasional untuk trauma tulang.",
-    },
-    {
-      name: "Global Ortho Systems",
-      slug: "global-ortho",
-      logoUrl: "https://placehold.co/200x200/16a34a/ffffff?text=GOS",
-      desc: "Sistem instrumen dan fiksasi ortopedi terintegrasi untuk rumah sakit.",
-    },
-    {
-      name: "BioCore Solutions",
-      slug: "biocore",
-      logoUrl: "https://placehold.co/200x200/ef4444/ffffff?text=BioCore",
-      desc: "Inovasi biomaterial untuk ortopedi regeneratif dan implan tulang yang mutakhir.",
-    },
-    {
-      name: "OrthoSpine Dynamics",
-      slug: "orthospine",
-      logoUrl: "https://placehold.co/200x200/8b5cf6/ffffff?text=OSD",
-      desc: "Solusi bedah tulang belakang dengan tingkat presisi dan keamanan terbaik.",
-    },
-    {
-      name: "Zenith Medical",
-      slug: "zenith",
-      logoUrl: "https://placehold.co/200x200/f59e0b/ffffff?text=Zenith",
-      desc: "Manufakturer alat kesehatan global dengan standar mutu ISO 13485.",
-    }
-  ];
-
-  // 3. Insert loop
-  for (const [idx, mfrData] of manufacturers.entries()) {
-    const mfr = await prisma.manufacturer.create({
-      data: mfrData
-    });
-    console.log(`Created manufacturer: ${mfr.name}`);
-
-    // Create 1 category per manufacturer (for dummy data purposes)
-    const cat = await prisma.category.create({
-      data: {
-        num: `[ 0${idx + 1} ]`,
-        name: "Kategori Unggulan - " + mfr.name,
-        desc: "Koleksi produk unggulan dari " + mfr.name,
-        imageUrl: CAT_IMG,
-        manufacturerId: mfr.id
-      }
-    });
-
-    // Create 1 subcategory
-    const subCat = await prisma.subCategory.create({
-      data: {
-        num: `0${idx + 1}.A`,
-        name: "Seri Utama",
-        desc: "Seri implan dan instrumen utama",
-        categoryId: cat.id
-      }
-    });
-
-    // Create 2 products per subcategory
-    await prisma.product.createMany({
-      data: [
-        {
-          name: `Produk A - ${mfr.name}`,
-          kodeBarang: `PRD-${idx}-A`,
-          description: `Deskripsi produk contoh A untuk ${mfr.name}`,
-          imageUrl: PROD_IMG,
-          subCategoryId: subCat.id
+  // 2. Categories
+  const catSheet = workbook.Sheets['Categories'];
+  if (catSheet) {
+    const categories = xlsx.utils.sheet_to_json(catSheet);
+    for (const row of categories) {
+      await prisma.category.upsert({
+        where: { slug: row.slug },
+        update: {
+            name: row.category_name,
+            sortOrder: row.sort_order,
+            isActive: row.is_active,
+            manufacturerId: manufacturer.id,
+            imageUrl: `https://marthysorthopaedic.com/dist/tipe_produk/${row.sort_order}.png`
         },
-        {
-          name: `Produk B - ${mfr.name}`,
-          kodeBarang: `PRD-${idx}-B`,
-          description: `Deskripsi produk contoh B untuk ${mfr.name}`,
-          imageUrl: PROD_IMG,
-          subCategoryId: subCat.id
-        }
-      ]
-    });
+        create: {
+          id: row.category_id,
+          slug: row.slug,
+          name: row.category_name,
+          sortOrder: row.sort_order || 0,
+          isActive: row.is_active ?? true,
+          manufacturerId: manufacturer.id,
+          imageUrl: `https://marthysorthopaedic.com/dist/tipe_produk/${row.sort_order}.png`
+        },
+      });
+    }
+    console.log(`Inserted ${categories.length} categories.`);
   }
 
-  console.log("Database seeded successfully!");
+  // 3. Products
+  const prodSheet = workbook.Sheets['Products'];
+  let validProductIds = new Set();
+  if (prodSheet) {
+    const products = xlsx.utils.sheet_to_json(prodSheet);
+    for (const row of products) {
+      validProductIds.add(row.product_id);
+      await prisma.product.upsert({
+        where: { slug: row.slug },
+        update: {
+            name: row.name,
+            description: row.description,
+            productKind: row.product_kind,
+            materialDisplay: row.material_display,
+            tableType: row.table_type,
+            showTable: row.show_table,
+            showInfoBlock: row.show_info_block,
+            showBrand: row.show_brand,
+            isActive: row.is_active,
+            imageUrl: row.source_image_url,
+        },
+        create: {
+          id: row.product_id,
+          slug: row.slug,
+          name: row.name,
+          description: row.description,
+          productKind: row.product_kind,
+          materialDisplay: row.material_display,
+          tableType: row.table_type,
+          showTable: row.show_table ?? true,
+          showInfoBlock: row.show_info_block ?? false,
+          showBrand: row.show_brand ?? true,
+          isActive: row.is_active ?? true,
+          imageUrl: row.source_image_url,
+        },
+      });
+    }
+    console.log(`Inserted ${products.length} products.`);
+  }
+
+  // 4. Product_Categories
+  const pcSheet = workbook.Sheets['Product_Categories'];
+  if (pcSheet) {
+    const pcData = xlsx.utils.sheet_to_json(pcSheet);
+    let count = 0;
+    for (const row of pcData) {
+      if (row.is_visible && validProductIds.has(row.product_id)) {
+         try {
+             await prisma.categoryToProduct.upsert({
+                where: {
+                    productId_categoryId: {
+                        productId: row.product_id,
+                        categoryId: row.category_id,
+                    }
+                },
+                update: {
+                    fixationType: row.fixation_type,
+                    sortOrder: row.sort_order
+                },
+                create: {
+                    productId: row.product_id,
+                    categoryId: row.category_id,
+                    fixationType: row.fixation_type,
+                    sortOrder: row.sort_order || 0
+                }
+             });
+             count++;
+         } catch(e) {
+             console.log(`Warning: Failed linking Product ${row.product_id} to Category ${row.category_id}`, e);
+         }
+      }
+    }
+    console.log(`Inserted ${count} Product-Category relations.`);
+  }
+
+  // 5. Implant_Specs
+  const specSheet = workbook.Sheets['Implant_Specs'];
+  if (specSheet) {
+    const specs = xlsx.utils.sheet_to_json(specSheet);
+    const validSpecs = specs.filter(r => r.is_visible && validProductIds.has(r.product_id)).map(row => ({
+        productId: row.product_id,
+        sortOrder: row.sort_order || 0,
+        catalogNumber: String(row.catalog_number_ss || row.source_catalog_number || ''),
+        material: String(row.material_display || row.source_material || ''),
+        size: String(row.size || ''),
+        tkdn: String(row.tkdn_ss || row.source_tkdn || ''),
+        eCatalog: String(row.e_catalog_ss || ''),
+        isVisible: true
+    }));
+    await prisma.implantSpec.createMany({
+        data: validSpecs,
+        skipDuplicates: true
+    });
+    console.log(`Inserted ${validSpecs.length} Implant Specs.`);
+  }
+
+  // 6. Components
+  const compSheet = workbook.Sheets['Components'];
+  if (compSheet) {
+    const comps = xlsx.utils.sheet_to_json(compSheet);
+    const validComps = comps.filter(r => r.is_visible && validProductIds.has(r.product_id)).map(row => ({
+        productId: row.product_id,
+        sortOrder: row.sort_order || 0,
+        productNumber: String(row.product_number || ''),
+        catalogNumber: String(row.catalog_number || ''),
+        componentName: String(row.component_name || ''),
+        specification: String(row.specification || ''),
+        qty: String(row.qty || ''),
+        isVisible: true
+    }));
+    await prisma.productComponent.createMany({
+        data: validComps,
+        skipDuplicates: true
+    });
+    console.log(`Inserted ${validComps.length} Components.`);
+  }
+
+  console.log("Seeding completed successfully.");
 }
 
 main()
