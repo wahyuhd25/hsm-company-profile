@@ -4,6 +4,7 @@ import ThemeSwitcher from "./components/ThemeSwitcher";
 import Katalog from "./components/Katalog";
 import Kontak from "./components/Kontak";
 
+export const revalidate = 3600; // Cache for 1 hour (ISR)
 
 export default function Home() {
   return (
@@ -160,7 +161,7 @@ export default function Home() {
       <Kontak />
 
       {/* ── Dev Theme Switcher Button ── */}
-      <ThemeSwitcher />
+      {process.env.NODE_ENV === "development" && <ThemeSwitcher />}
     </>
   );
 }

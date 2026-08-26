@@ -6,10 +6,7 @@ import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { SignJWT } from "jose";
 import { cookies } from "next/headers";
-
-const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || "fallback-secret-for-hsm-company-profile-auth-12345"
-);
+import { JWT_SECRET, SESSION_COOKIE } from "@/lib/auth";
 
 export async function login(formData: FormData) {
   const email = formData.get("email") as string;
@@ -43,7 +40,7 @@ export async function login(formData: FormData) {
 
   // Set HTTP-only secure session cookie
   const cookieStore = await cookies();
-  cookieStore.set("hsm_session", token, {
+  cookieStore.set(SESSION_COOKIE, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
@@ -57,7 +54,7 @@ export async function login(formData: FormData) {
 
 export async function logout() {
   const cookieStore = await cookies();
-  cookieStore.delete("hsm_session");
+  cookieStore.delete(SESSION_COOKIE);
   revalidatePath("/", "layout");
   redirect("/login");
 }

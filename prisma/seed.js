@@ -1,204 +1,172 @@
-const { PrismaClient } = require("@prisma/client");
+const { PrismaClient } = require('@prisma/client');
+const xlsx = require('xlsx');
+const path = require('path');
 const prisma = new PrismaClient();
 
-const LOGO_MARTHYS = "https://marthysorthopaedic.com/dist/logo/marthys1.png";
-const CAT_IMG = "https://marthysorthopaedic.com/dist/tipe_produk/4.png";
-const PROD_IMG = "https://marthysorthopaedic.com/dist/produk/10.%20CLAVICLE%20HOOK%20LOCKING%20PLATE.png";
-
 async function main() {
-  console.log("Seeding database...");
+  const filePath = path.join(__dirname, '..', 'crawling', 'Marthys_Catalog_Import_Ready.xlsx');
+  console.log(`Reading Excel file from: ${filePath}`);
+  const workbook = xlsx.readFile(filePath);
 
-  // 1. Clean existing data
-  await prisma.product.deleteMany({});
-  await prisma.subCategory.deleteMany({});
-  await prisma.category.deleteMany({});
-  await prisma.manufacturer.deleteMany({});
-
-  // 2. Create Marthys Manufacturer
-  const marthys = await prisma.manufacturer.create({
-    data: {
-      name: "Marthys Orthopaedics",
-      slug: "marthys",
-      logoUrl: LOGO_MARTHYS,
-      desc: "Spesialis produk implan ortopedi & instrumen bedah berkualitas tinggi",
+  // 1. Create Manufacturer
+  const manufacturer = await prisma.manufacturer.upsert({
+    where: { slug: 'marthys' },
+    update: {},
+    create: {
+      name: 'MARTHYS',
+      slug: 'marthys',
+      desc: 'Marthys Orthopaedic',
+      logoUrl: 'https://marthysorthopaedic.com/assets/images/logo%20web.png'
     },
   });
+  console.log(`Manufacturer created/found: ${manufacturer.name}`);
 
-  // 3. Create Categories
-  const categoriesData = [
-    {
-      num: "[ 01 ]",
-      name: "Implan Ortopedi — Bone Plates",
-      desc: "Semua jenis plat tulang (termasuk Straight Plate, Tubular Plate, DCP, LCP) dari sistem Mini, Small, Large, hingga Titanium.",
-      imageUrl: CAT_IMG,
-      manufacturerId: marthys.id,
-    },
-    {
-      num: "[ 02 ]",
-      name: "Implan Ortopedi — Bone Screws",
-      desc: "Cortical Screw, Cancellous Screw, Locking Screw, Ring Washer",
-      imageUrl: CAT_IMG,
-      manufacturerId: marthys.id,
-    },
-    {
-      num: "[ 03 ]",
-      name: "Instrumen Bedah",
-      desc: "Hand Instruments, Instrument Sets, Power Tools & Accessories",
-      imageUrl: CAT_IMG,
-      manufacturerId: marthys.id,
-    },
-    {
-      num: "[ 04 ]",
-      name: "Fiksasi Eksternal",
-      desc: "Pins & Wires untuk fiksasi eksternal tulang",
-      imageUrl: CAT_IMG,
-      manufacturerId: marthys.id,
-    },
-    {
-      num: "[ 05 ]",
-      name: "Joint Replacement",
-      desc: "Bipolar Prosthesis, Total Hip Replacement, Total Knee Replacement",
-      imageUrl: CAT_IMG,
-      manufacturerId: marthys.id,
-    },
-    {
-      num: "[ 06 ]",
-      name: "Aksesoris",
-      desc: "Kotak penyimpanan dan aksesori pendukung produk ortopedi",
-      imageUrl: CAT_IMG,
-      manufacturerId: marthys.id,
-    },
-    {
-      num: "[ 07 ]",
-      name: "Intramedullary Nails",
-      desc: "Batang paku intramedullary: Femur, Tibia, Humeral",
-      imageUrl: CAT_IMG,
-      manufacturerId: marthys.id,
-    },
-  ];
-
-  const categories = [];
-  for (const cat of categoriesData) {
-    const created = await prisma.category.create({ data: cat });
-    categories.push(created);
+  // 2. Categories
+  const catSheet = workbook.Sheets['Categories'];
+  if (catSheet) {
+    const categories = xlsx.utils.sheet_to_json(catSheet);
+    for (const row of categories) {
+      await prisma.category.upsert({
+        where: { slug: row.slug },
+        update: {
+            name: row.category_name,
+            sortOrder: row.sort_order,
+            isActive: row.is_active,
+            manufacturerId: manufacturer.id,
+            imageUrl: `https://marthysorthopaedic.com/dist/tipe_produk/${row.sort_order}.png`
+        },
+        create: {
+          id: row.category_id,
+          slug: row.slug,
+          name: row.category_name,
+          sortOrder: row.sort_order || 0,
+          isActive: row.is_active ?? true,
+          manufacturerId: manufacturer.id,
+          imageUrl: `https://marthysorthopaedic.com/dist/tipe_produk/${row.sort_order}.png`
+        },
+      });
+    }
+    console.log(`Inserted ${categories.length} categories.`);
   }
 
-  // 4. Create Subcategories & Products
-  const catBonePlates = categories.find(c => c.name.includes("Bone Plates"));
-  const catBoneScrews = categories.find(c => c.name.includes("Bone Screws"));
-  const catInstrumen = categories.find(c => c.name.includes("Instrumen"));
-  const catFiksasi = categories.find(c => c.name.includes("Fiksasi"));
-  const catJoint = categories.find(c => c.name.includes("Joint"));
-  const catAksesoris = categories.find(c => c.name.includes("Aksesoris"));
-  const catNails = categories.find(c => c.name.includes("Nails"));
-
-  // Bone Plates
-  if (catBonePlates) {
-    const subLSS = await prisma.subCategory.create({
-      data: { num: "01.A", name: "Locking Stainless Steel", desc: "Locking Stainless Steel Plates", categoryId: catBonePlates.id }
-    });
-    const subLT = await prisma.subCategory.create({
-      data: { num: "01.B", name: "Locking Titanium", desc: "Locking Titanium Plates", categoryId: catBonePlates.id }
-    });
-    const subNLM = await prisma.subCategory.create({
-      data: { num: "01.E", name: "Non-Locking Mini", desc: "Non-Locking Mini Plates", categoryId: catBonePlates.id }
-    });
-
-    await prisma.product.createMany({
-      data: [
-        { name: "MINI STRAIGHT PLATE 4H", kodeBarang: "MNI-001", description: "Mini straight plate with 4 holes", imageUrl: PROD_IMG, subCategoryId: subNLM.id },
-        { name: "MINI STRAIGHT PLATE 6H", kodeBarang: "MNI-002", description: "Mini straight plate with 6 holes", imageUrl: PROD_IMG, subCategoryId: subNLM.id },
-        { name: "MINI T-PLATE", kodeBarang: "MNI-003", description: "Mini T-shaped plate", imageUrl: PROD_IMG, subCategoryId: subNLM.id },
-        { name: "LCP PROXIMAL HUMERUS PLATE", kodeBarang: "LSS-001", description: "Proximal humerus locking plate", imageUrl: PROD_IMG, subCategoryId: subLSS.id },
-        { name: "LCP DISTAL FEMUR PLATE", kodeBarang: "LSS-002", description: "Distal femur locking plate", imageUrl: PROD_IMG, subCategoryId: subLSS.id },
-      ]
-    });
+  // 3. Products
+  const prodSheet = workbook.Sheets['Products'];
+  let validProductIds = new Set();
+  if (prodSheet) {
+    const products = xlsx.utils.sheet_to_json(prodSheet);
+    for (const row of products) {
+      validProductIds.add(row.product_id);
+      await prisma.product.upsert({
+        where: { slug: row.slug },
+        update: {
+            name: row.name,
+            description: row.description,
+            productKind: row.product_kind,
+            materialDisplay: row.material_display,
+            tableType: row.table_type,
+            showTable: row.show_table,
+            showInfoBlock: row.show_info_block,
+            showBrand: row.show_brand,
+            isActive: row.is_active,
+            imageUrl: row.source_image_url,
+        },
+        create: {
+          id: row.product_id,
+          slug: row.slug,
+          name: row.name,
+          description: row.description,
+          productKind: row.product_kind,
+          materialDisplay: row.material_display,
+          tableType: row.table_type,
+          showTable: row.show_table ?? true,
+          showInfoBlock: row.show_info_block ?? false,
+          showBrand: row.show_brand ?? true,
+          isActive: row.is_active ?? true,
+          imageUrl: row.source_image_url,
+        },
+      });
+    }
+    console.log(`Inserted ${products.length} products.`);
   }
 
-  // Bone Screws
-  if (catBoneScrews) {
-    const subCortical = await prisma.subCategory.create({
-      data: { num: "02.A", name: "Cortical Screw", desc: "Cortical Screws", categoryId: catBoneScrews.id }
-    });
-    const subLocking = await prisma.subCategory.create({
-      data: { num: "02.B", name: "Locking Screw", desc: "Locking Screws", categoryId: catBoneScrews.id }
-    });
-
-    await prisma.product.createMany({
-      data: [
-        { name: "CORTICAL SCREW 3.5MM x 10MM", kodeBarang: "COR-001", description: "Cortical screw diameter 3.5mm length 10mm", imageUrl: PROD_IMG, subCategoryId: subCortical.id },
-        { name: "CORTICAL SCREW 3.5MM x 16MM", kodeBarang: "COR-002", description: "Cortical screw diameter 3.5mm length 16mm", imageUrl: PROD_IMG, subCategoryId: subCortical.id },
-        { name: "LOCKING SCREW 3.5MM x 12MM", kodeBarang: "LOK-001", description: "Locking screw diameter 3.5mm length 12mm", imageUrl: PROD_IMG, subCategoryId: subLocking.id },
-      ]
-    });
+  // 4. Product_Categories
+  const pcSheet = workbook.Sheets['Product_Categories'];
+  if (pcSheet) {
+    const pcData = xlsx.utils.sheet_to_json(pcSheet);
+    let count = 0;
+    for (const row of pcData) {
+      if (row.is_visible && validProductIds.has(row.product_id)) {
+         try {
+             await prisma.categoryToProduct.upsert({
+                where: {
+                    productId_categoryId: {
+                        productId: row.product_id,
+                        categoryId: row.category_id,
+                    }
+                },
+                update: {
+                    fixationType: row.fixation_type,
+                    sortOrder: row.sort_order
+                },
+                create: {
+                    productId: row.product_id,
+                    categoryId: row.category_id,
+                    fixationType: row.fixation_type,
+                    sortOrder: row.sort_order || 0
+                }
+             });
+             count++;
+         } catch(e) {
+             console.log(`Warning: Failed linking Product ${row.product_id} to Category ${row.category_id}`, e);
+         }
+      }
+    }
+    console.log(`Inserted ${count} Product-Category relations.`);
   }
 
-  // Instrumen Bedah
-  if (catInstrumen) {
-    const subHand = await prisma.subCategory.create({
-      data: { num: "03.A", name: "Hand Instruments", desc: "Hand-held surgical instruments", categoryId: catInstrumen.id }
+  // 5. Implant_Specs
+  const specSheet = workbook.Sheets['Implant_Specs'];
+  if (specSheet) {
+    const specs = xlsx.utils.sheet_to_json(specSheet);
+    const validSpecs = specs.filter(r => r.is_visible && validProductIds.has(r.product_id)).map(row => ({
+        productId: row.product_id,
+        sortOrder: row.sort_order || 0,
+        catalogNumber: String(row.catalog_number_ss || row.source_catalog_number || ''),
+        material: String(row.material_display || row.source_material || ''),
+        size: String(row.size || ''),
+        tkdn: String(row.tkdn_ss || row.source_tkdn || ''),
+        eCatalog: String(row.e_catalog_ss || ''),
+        isVisible: true
+    }));
+    await prisma.implantSpec.createMany({
+        data: validSpecs,
+        skipDuplicates: true
     });
-    await prisma.product.createMany({
-      data: [
-        { name: "BONE CURRETE SET", kodeBarang: "INS-001", description: "Bone curette surgical set", imageUrl: PROD_IMG, subCategoryId: subHand.id },
-        { name: "BONE HOLDING FORCEPS", kodeBarang: "INS-002", description: "Bone holding forceps", imageUrl: PROD_IMG, subCategoryId: subHand.id },
-      ]
-    });
+    console.log(`Inserted ${validSpecs.length} Implant Specs.`);
   }
 
-  // Fiksasi Eksternal
-  if (catFiksasi) {
-    const subPins = await prisma.subCategory.create({
-      data: { num: "04.A", name: "Pins & Wires", desc: "Pins and wires for external fixation", categoryId: catFiksasi.id }
+  // 6. Components
+  const compSheet = workbook.Sheets['Components'];
+  if (compSheet) {
+    const comps = xlsx.utils.sheet_to_json(compSheet);
+    const validComps = comps.filter(r => r.is_visible && validProductIds.has(r.product_id)).map(row => ({
+        productId: row.product_id,
+        sortOrder: row.sort_order || 0,
+        productNumber: String(row.product_number || ''),
+        catalogNumber: String(row.catalog_number || ''),
+        componentName: String(row.component_name || ''),
+        specification: String(row.specification || ''),
+        qty: String(row.qty || ''),
+        isVisible: true
+    }));
+    await prisma.productComponent.createMany({
+        data: validComps,
+        skipDuplicates: true
     });
-    await prisma.product.createMany({
-      data: [
-        { name: "K-WIRE 1.0MM", kodeBarang: "PIN-001", description: "Kirschner wire 1.0mm", imageUrl: PROD_IMG, subCategoryId: subPins.id },
-        { name: "K-WIRE 1.5MM", kodeBarang: "PIN-002", description: "Kirschner wire 1.5mm", imageUrl: PROD_IMG, subCategoryId: subPins.id },
-      ]
-    });
+    console.log(`Inserted ${validComps.length} Components.`);
   }
 
-  // Joint Replacement
-  if (catJoint) {
-    const subBipolar = await prisma.subCategory.create({
-      data: { num: "05.A", name: "Bipolar Prosthesis", desc: "Bipolar hip replacement prosthesis", categoryId: catJoint.id }
-    });
-    await prisma.product.createMany({
-      data: [
-        { name: "BIPOLAR HEAD 22MM", kodeBarang: "BIP-001", description: "Bipolar prosthesis head size 22mm", imageUrl: PROD_IMG, subCategoryId: subBipolar.id },
-        { name: "BIPOLAR HEAD 26MM", kodeBarang: "BIP-002", description: "Bipolar prosthesis head size 26mm", imageUrl: PROD_IMG, subCategoryId: subBipolar.id },
-      ]
-    });
-  }
-
-  // Aksesoris
-  if (catAksesoris) {
-    const subBox = await prisma.subCategory.create({
-      data: { num: "06.A", name: "Kotak Penyimpanan", desc: "Storage boxes for implants and instruments", categoryId: catAksesoris.id }
-    });
-    await prisma.product.createMany({
-      data: [
-        { name: "INSTRUMENT STORAGE BOX SMALL", kodeBarang: "BOX-001", description: "Small storage container", imageUrl: PROD_IMG, subCategoryId: subBox.id },
-        { name: "INSTRUMENT STORAGE BOX MEDIUM", kodeBarang: "BOX-002", description: "Medium storage container", imageUrl: PROD_IMG, subCategoryId: subBox.id },
-      ]
-    });
-  }
-
-  // Intramedullary Nails
-  if (catNails) {
-    const subNails = await prisma.subCategory.create({
-      data: { num: "07.A", name: "Interlocking Nails", desc: "Interlocking intramedullary nails", categoryId: catNails.id }
-    });
-    await prisma.product.createMany({
-      data: [
-        { name: "FEMORAL INTERLOCKING NAIL 9MM", kodeBarang: "INL-001", description: "Femoral intramedullary nail 9mm", imageUrl: PROD_IMG, subCategoryId: subNails.id },
-        { name: "TIBIAL INTERLOCKING NAIL 8MM", kodeBarang: "INL-002", description: "Tibial intramedullary nail 8mm", imageUrl: PROD_IMG, subCategoryId: subNails.id },
-      ]
-    });
-  }
-
-  console.log("Database seeded successfully!");
+  console.log("Seeding completed successfully.");
 }
 
 main()

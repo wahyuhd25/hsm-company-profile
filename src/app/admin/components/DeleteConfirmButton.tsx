@@ -1,7 +1,7 @@
 "use client";
 
 interface Props {
-  action: (formData: FormData) => Promise<any>;
+  action: (formData: FormData) => Promise<void>;
   confirmMessage: string;
   className: string;
   children: React.ReactNode;

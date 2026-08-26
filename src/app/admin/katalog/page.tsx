@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import {
   createManufacturer,
@@ -9,6 +10,7 @@ import {
 } from "@/app/actions/katalog";
 import AdminHeader from "../components/AdminHeader";
 import DeleteConfirmButton from "../components/DeleteConfirmButton";
+import SafeImage from "@/app/components/SafeImage";
 import styles from "./katalog-admin.module.css";
 import type { Metadata } from "next";
 
@@ -28,7 +30,7 @@ export default async function CatalogMainAdminPage({ searchParams }: Props) {
   const { mfr, editMfr, editCat } = await searchParams;
 
   const editMfrId = editMfr ? Number(editMfr) : null;
-  const editCatId = editCat ? Number(editCat) : null;
+  const editCatId = editCat || null;
 
   // 1. Fetch manufacturers
   const manufacturers = await prisma.manufacturer.findMany({
@@ -49,7 +51,7 @@ export default async function CatalogMainAdminPage({ searchParams }: Props) {
         where: { manufacturerId: activeMfrId },
         orderBy: { id: "asc" },
         include: {
-          _count: { select: { subCategories: true } },
+          _count: { select: { products: true } },
         },
       })
     : [];
@@ -70,7 +72,7 @@ export default async function CatalogMainAdminPage({ searchParams }: Props) {
       <main className={styles.main}>
         {/* Breadcrumb */}
         <nav className={styles.breadcrumb}>
-          <a href="/admin" className={styles.breadcrumbLink}>Admin</a>
+          <Link href="/admin" className={styles.breadcrumbLink}>Admin</Link>
           <span className={styles.breadcrumbSep}>›</span>
           <span className={styles.breadcrumbCurrent}>Katalog Utama</span>
         </nav>
@@ -115,7 +117,7 @@ export default async function CatalogMainAdminPage({ searchParams }: Props) {
                     {editingMfr ? "Simpan" : "Tambah"}
                   </button>
                   {editingMfr && (
-                    <a href="/admin/katalog" className={styles.btnSecondaryCompact}>Batal</a>
+                    <Link href="/admin/katalog" className={styles.btnSecondaryCompact}>Batal</Link>
                   )}
                 </div>
               </form>
@@ -135,18 +137,17 @@ export default async function CatalogMainAdminPage({ searchParams }: Props) {
                         key={m.id}
                         className={`${styles.mfrItem} ${isActive ? styles.mfrItemActive : ""}`}
                       >
-                        <a href={`/admin/katalog?mfr=${m.id}`} className={styles.mfrItemLink}>
+                        <Link href={`/admin/katalog?mfr=${m.id}`} className={styles.mfrItemLink}>
                           {m.logoUrl && (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img src={m.logoUrl} alt="" className={styles.mfrMiniLogo} />
+                            <SafeImage src={m.logoUrl} alt="" className={styles.mfrMiniLogo} fallback={null} />
                           )}
                           <span className={styles.mfrItemName}>{m.name}</span>
                           <span className={styles.mfrItemCount}>({m._count.categories} kat)</span>
-                        </a>
+                        </Link>
                         <div className={styles.mfrItemActions}>
-                          <a href={`/admin/katalog?editMfr=${m.id}`} className={styles.btnIconEdit} title="Edit">
+                          <Link href={`/admin/katalog?editMfr=${m.id}`} className={styles.btnIconEdit} title="Edit">
                             ✎
-                          </a>
+                          </Link>
                           <DeleteConfirmButton
                             action={deleteManufacturer}
                             confirmMessage={`Hapus manufakturer "${m.name}"? Semua kategori, subkategori, dan produk di dalamnya akan ikut terhapus.`}
@@ -183,8 +184,8 @@ export default async function CatalogMainAdminPage({ searchParams }: Props) {
                     {editingCat && <input type="hidden" name="id" value={editingCat.id} />}
                     <div className={styles.formGrid}>
                       <div className={styles.formField}>
-                        <label className={styles.formLabel}>Nomor Tampilan</label>
-                        <input className={styles.formInput} type="text" name="num" defaultValue={editingCat?.num || ""} placeholder="[ 01 ]" required />
+                        <label className={styles.formLabel}>Nomor Urutan</label>
+                        <input className={styles.formInput} type="number" name="sortOrder" defaultValue={editingCat?.sortOrder ?? 0} placeholder="0" required />
                       </div>
                       <div className={styles.formField}>
                         <label className={styles.formLabel}>Nama Kategori</label>
@@ -206,7 +207,7 @@ export default async function CatalogMainAdminPage({ searchParams }: Props) {
                         {editingCat ? "Simpan Perubahan" : "Tambah Kategori"}
                       </button>
                       {editingCat && (
-                        <a href={`/admin/katalog?mfr=${activeMfrId}`} className={styles.btnSecondary}>Batal</a>
+                        <Link href={`/admin/katalog?mfr=${activeMfrId}`} className={styles.btnSecondary}>Batal</Link>
                       )}
                     </div>
                   </form>
@@ -232,7 +233,7 @@ export default async function CatalogMainAdminPage({ searchParams }: Props) {
                           <th className={styles.th}>Gambar</th>
                           <th className={styles.th}>Nomor</th>
                           <th className={styles.th}>Nama Kategori</th>
-                          <th className={styles.th}>Sub Kategori</th>
+                          <th className={styles.th}>Total Produk</th>
                           <th className={styles.th}>Aksi</th>
                         </tr>
                       </thead>
@@ -241,26 +242,30 @@ export default async function CatalogMainAdminPage({ searchParams }: Props) {
                           <tr key={cat.id} className={styles.tr}>
                             <td className={styles.td}>
                               {cat.imageUrl ? (
-                                // eslint-disable-next-line @next/next/no-img-element
-                                <img src={cat.imageUrl} alt="" className={styles.imgPreview} />
+                                <SafeImage
+                                  src={cat.imageUrl}
+                                  alt=""
+                                  className={styles.imgPreview}
+                                  fallback={<div className={styles.noImg}>No img</div>}
+                                />
                               ) : (
                                 <div className={styles.noImg}>No img</div>
                               )}
                             </td>
                             <td className={styles.td}>
-                              <span className={styles.itemCode}>{cat.num}</span>
+                              <span className={styles.itemCode}>{cat.sortOrder}</span>
                             </td>
                             <td className={styles.td}>
                               <span className={styles.itemName}>{cat.name}</span>
                             </td>
                             <td className={styles.td}>
-                              <span className={styles.subCount}>{cat._count.subCategories} sub</span>
+                              <span className={styles.subCount}>{cat._count.products} produk</span>
                             </td>
                             <td className={styles.td}>
                               <div className={styles.actions}>
-                                <a href={`/admin/katalog?mfr=${activeMfrId}&editCat=${cat.id}`} className={styles.btnEdit}>
+                                <Link href={`/admin/katalog?mfr=${activeMfrId}&editCat=${cat.id}`} className={styles.btnEdit}>
                                   Edit
-                                </a>
+                                </Link>
                                 <DeleteConfirmButton
                                   action={deleteCategory}
                                   confirmMessage={`Hapus kategori "${cat.name}" beserta seluruh subkategori dan produk di dalamnya?`}
@@ -269,13 +274,13 @@ export default async function CatalogMainAdminPage({ searchParams }: Props) {
                                 >
                                   Hapus
                                 </DeleteConfirmButton>
-                                <a href={`/admin/katalog/${cat.id}`} className={styles.btnView}>
-                                  Kelola Sub &amp; Produk
+                                <Link href={`/admin/katalog/${cat.id}`} className={styles.btnView}>
+                                  Kelola Produk
                                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                                     <line x1="5" y1="12" x2="19" y2="12"/>
                                     <polyline points="12 5 19 12 12 19"/>
                                   </svg>
-                                </a>
+                                </Link>
                               </div>
                             </td>
                           </tr>

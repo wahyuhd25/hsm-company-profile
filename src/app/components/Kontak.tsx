@@ -1,6 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
+import { submitContactMessage } from "@/app/actions/contact";
+import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 
 export default function Kontak() {
   const [formData, setFormData] = useState({
@@ -12,6 +14,8 @@ export default function Kontak() {
   });
 
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [turnstileToken, setTurnstileToken] = useState<string>("");
+  const turnstileRef = useRef<TurnstileInstance>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -23,21 +27,43 @@ export default function Kontak() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!turnstileToken) {
+      alert("Harap tunggu sebentar hingga verifikasi keamanan selesai.");
+      return;
+    }
+
     setStatus("loading");
 
-    // Simulasi pengiriman data form (API Call)
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      setStatus("success");
-      setFormData({
-        nama: "",
-        email: "",
-        institusi: "",
-        telepon: "",
-        pesan: "",
-      });
+      const formDataObj = new FormData();
+      formDataObj.append("nama", formData.nama);
+      formDataObj.append("email", formData.email);
+      formDataObj.append("institusi", formData.institusi);
+      formDataObj.append("telepon", formData.telepon);
+      formDataObj.append("pesan", formData.pesan);
+
+      const res = await submitContactMessage(formDataObj, turnstileToken);
+
+      if (res.success) {
+        setStatus("success");
+        setFormData({
+          nama: "",
+          email: "",
+          institusi: "",
+          telepon: "",
+          pesan: "",
+        });
+      } else {
+        alert(res.error || "Gagal mengirim pesan.");
+        setStatus("error");
+      }
     } catch {
       setStatus("error");
+    } finally {
+      // Reset turnstile for next submission
+      turnstileRef.current?.reset();
+      setTurnstileToken("");
     }
   };
 
@@ -141,12 +167,28 @@ export default function Kontak() {
                   Informasi Umum: info@hartindosuryamedika.com<br />
                   Penawaran/Katalog: sales@hartindosuryamedika.com
                 </p>
-                <a href="mailto:info@hartindosuryamedika.com" className="kontak__card-link">
-                  Kirim Email
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-                    <path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </a>
+                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                  <button 
+                    onClick={() => {
+                      navigator.clipboard.writeText("info@hartindosuryamedika.com");
+                      alert("Alamat email info@hartindosuryamedika.com berhasil disalin!");
+                    }} 
+                    className="kontak__card-link"
+                    style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', font: 'inherit', textAlign: 'left' }}
+                  >
+                    Salin Email
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                      <path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </button>
+
+                  <a href="mailto:info@hartindosuryamedika.com" className="kontak__card-link">
+                    Buka Aplikasi Email
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                      <path d="M1.5 6H10.5M10.5 6L6.5 2M10.5 6L6.5 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </a>
+                </div>
               </div>
             </div>
 
@@ -259,6 +301,15 @@ export default function Kontak() {
                 </div>
               )}
 
+              <div style={{ marginBottom: '1.5rem' }}>
+                <Turnstile
+                  ref={turnstileRef}
+                  siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "1x00000000000000000000AA"}
+                  onSuccess={(token) => setTurnstileToken(token)}
+                  options={{ theme: "light" }}
+                />
+              </div>
+
               <button 
                 type="submit" 
                 className="kontak__btn-submit"
@@ -291,7 +342,7 @@ export default function Kontak() {
           <div className="kontak__map-wrapper">
             <iframe
               title="Peta Lokasi PT. Hartindo Surya Medika Makassar"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d127164.67568551465!2d119.3871408892408!3d-5.11188177579736!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dbf152d194cf21d%3A0xc07a82ed6403ea4d!2sMakassar%2C%20Makassar%20City%2C%20South%20Sulawesi!5e0!3m2!1sen!2sid!4v1719567890000!5m2!1sen!2sid"
+              src="https://maps.google.com/maps?q=PT.+Hartindo+Surya+Medika+Makassar&t=&z=15&ie=UTF8&iwloc=&output=embed"
               allowFullScreen
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"

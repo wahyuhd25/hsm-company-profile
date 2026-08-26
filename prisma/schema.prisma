@@ -30,47 +30,86 @@ model Manufacturer {
 }
 
 model Category {
-  id             Int           @id @default(autoincrement())
-  num            String        // Nomor tampilan, misal "[ 01 ]"
+  id             String        @id @default(cuid()) // e.g. CAT-SPINAL
+  slug           String        @unique
   name           String
-  desc           String
+  desc           String?
+  sortOrder      Int           @default(0)
   imageUrl       String?       // URL gambar untuk card kategori di publik
   manufacturerId Int?          // Relasi ke manufakturer
   manufacturer   Manufacturer? @relation(fields: [manufacturerId], references: [id], onDelete: SetNull)
-  subCategories  SubCategory[]
+  products       CategoryToProduct[]
+  isActive       Boolean       @default(true)
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
 
   @@map("categories")
 }
 
-model SubCategory {
-  id         Int      @id @default(autoincrement())
-  num        String   // Nomor tampilan, misal "01.A"
-  name       String
-  desc       String
-  categoryId Int
-  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  products   Product[]
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-
-  @@map("sub_categories")
-}
-
 model Product {
-  id            Int         @id @default(autoincrement())
-  kodeBarang    String?     // Kode produk, misal "MNI-028"
-  name          String
-  description   String?
-  imageUrl      String?
-  subCategoryId Int
-  subCategory   SubCategory @relation(fields: [subCategoryId], references: [id], onDelete: Cascade)
-  isActive      Boolean     @default(true)
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  id               String   @id // e.g. "MRT-0002"
+  slug             String   @unique
+  name             String
+  description      String?
+  productKind      String?  // 'implant' | 'instrument'
+  materialDisplay  String?  // 'SS' | 'Ti'
+  tableType        String?  // 'SIZE_CATALOG' | 'COMPONENT_LIST'
+  showTable        Boolean  @default(true)
+  showInfoBlock    Boolean  @default(false)
+  showBrand        Boolean  @default(true)
+  isActive         Boolean  @default(true)
+  imageUrl         String?
+  
+  categories       CategoryToProduct[]
+  implantSpecs     ImplantSpec[]
+  components       ProductComponent[]
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   @@map("products")
+}
+
+model CategoryToProduct {
+  productId    String
+  categoryId   String
+  product      Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  category     Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  fixationType String?  // 'locking' | 'non_locking' | 'standard'
+  sortOrder    Int      @default(0)
+
+  @@id([productId, categoryId])
+  @@map("category_to_product")
+}
+
+model ImplantSpec {
+  id                Int      @id @default(autoincrement())
+  productId         String
+  product           Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  sortOrder         Int      @default(0)
+  catalogNumber     String?  // source_catalog_number
+  material          String?  // source_material
+  size              String?
+  tkdn              String?
+  eCatalog          String?
+  isVisible         Boolean  @default(true)
+
+  @@map("implant_specs")
+}
+
+model ProductComponent {
+  id                Int      @id @default(autoincrement())
+  productId         String
+  product           Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  sortOrder         Int      @default(0)
+  productNumber     String?
+  catalogNumber     String?
+  componentName     String
+  specification     String?
+  qty               String?
+  isVisible         Boolean  @default(true)
+
+  @@map("product_components")
 }
 
 // ============================================================
@@ -81,6 +120,7 @@ model ContactMessage {
   id        Int      @id @default(autoincrement())
   name      String
   email     String
+  institusi String?
   phone     String?
   message   String
   isRead    Boolean  @default(false)

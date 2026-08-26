@@ -18,9 +18,26 @@ export default function ThemeSwitcher() {
   const [activeTheme, setActiveTheme] = useState("Light Green");
 
   useEffect(() => {
-    const currentClass = document.documentElement.className || "";
-    const currentTheme = themes.find((t) => t && currentClass.includes(t)) || "";
-    const name = themeNames[currentTheme];
+    // 1. Coba baca dari localStorage dulu
+    const savedTheme = localStorage.getItem("hsm-theme");
+    
+    let currentTheme = "";
+    if (savedTheme !== null) {
+      currentTheme = savedTheme;
+      // Terapkan theme dari localStorage
+      themes.forEach((t) => {
+        if (t) document.documentElement.classList.remove(t);
+      });
+      if (currentTheme) {
+        document.documentElement.classList.add(currentTheme);
+      }
+    } else {
+      // 2. Jika tidak ada di localStorage, baca dari classList
+      const currentClass = document.documentElement.className || "";
+      currentTheme = themes.find((t) => t && currentClass.includes(t)) || "";
+    }
+
+    const name = themeNames[currentTheme] || "Light Green";
     
     const handle = requestAnimationFrame(() => {
       setActiveTheme(name);
@@ -43,6 +60,9 @@ export default function ThemeSwitcher() {
     if (nextTheme) {
       document.documentElement.classList.add(nextTheme);
     }
+
+    // Save to localStorage
+    localStorage.setItem("hsm-theme", nextTheme);
 
     setActiveTheme(themeNames[nextTheme]);
   };

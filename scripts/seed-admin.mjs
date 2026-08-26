@@ -4,8 +4,13 @@ import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 
 async function main() {
-  const email = "manager@hartindo.local";
-  const plainPassword = "testing";
+  const email = process.env.ADMIN_EMAIL;
+  const plainPassword = process.env.ADMIN_PASSWORD;
+
+  if (!email || !plainPassword) {
+    console.error("❌ Set ADMIN_EMAIL dan ADMIN_PASSWORD dulu (lihat docs/SETUP.md).");
+    process.exit(1);
+  }
 
   // Check if admin already exists
   const existingAdmin = await prisma.admin.findUnique({
