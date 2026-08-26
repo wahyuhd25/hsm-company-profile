@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import Link from "next/link";
 import { login } from "@/app/actions/auth";
 import styles from "./login.module.css";
 
@@ -16,16 +17,7 @@ export default function LoginPage() {
     startTransition(async () => {
       const result = await login(formData);
       if (result?.error) {
-        const msg = result.error.toLowerCase();
-        if (msg.includes("invalid login credentials") || msg.includes("invalid credentials")) {
-          setError("Email atau password salah. Silakan coba lagi.");
-        } else if (msg.includes("email not confirmed")) {
-          setError("Email belum dikonfirmasi. Cek inbox email Anda.");
-        } else if (msg.includes("too many requests")) {
-          setError("Terlalu banyak percobaan. Coba lagi beberapa menit.");
-        } else {
-          setError("Login gagal: " + result.error);
-        }
+        setError(result.error);
       }
     });
   }
@@ -34,13 +26,13 @@ export default function LoginPage() {
     <div className={styles.container}>
       <div className={styles.grid} />
 
-      <a href="/" className={styles.backButton}>
+      <Link href="/" className={styles.backButton}>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <line x1="19" y1="12" x2="5" y2="12"></line>
           <polyline points="12 19 5 12 12 5"></polyline>
         </svg>
         Kembali ke Beranda
-      </a>
+      </Link>
 
       <div className={styles.card}>
         <div className={styles.brand}>
