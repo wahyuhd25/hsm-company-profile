@@ -11,7 +11,7 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   title: "PT. Hartindo Surya Medika | Distributor Produk Ortopedi Terpercaya",
   description:
-    "PT. Hartindo Surya Medika mendukung tenaga medis dengan produk ortopedi berkualitas dan layanan yang responsif. Telah melayani lebih dari 133K+ produk terjual dan 2800+ pesanan terselesaikan.",
+    "PT. Hartindo Surya Medika mendukung tenaga medis dengan produk ortopedi berkualitas dan layanan yang responsif.",
   keywords: "ortopedi, alat medis, hartindo surya medika, HSM, distribusi medis, Makassar",
   openGraph: {
     title: "PT. Hartindo Surya Medika",
@@ -26,8 +26,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" className={plusJakartaSans.variable}>
-      <body>{children}</body>
+    <html lang="id" className={plusJakartaSans.variable} suppressHydrationWarning>
+      <body suppressHydrationWarning>{children}</body>
     </html>
   );
 }

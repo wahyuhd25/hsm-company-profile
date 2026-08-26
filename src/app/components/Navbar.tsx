@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -14,22 +15,22 @@ export default function Navbar() {
   return (
     <nav className={`navbar${scrolled ? " scrolled" : ""}`} role="navigation" aria-label="Navigasi utama">
       <div className="navbar__inner">
-        <a href="#" className="navbar__logo" aria-label="HSM - PT. Hartindo Surya Medika">
+        <Link href="/" className="navbar__logo" aria-label="HSM - PT. Hartindo Surya Medika">
           HSM
-        </a>
+        </Link>
         <ul className="navbar__nav">
-          <li><a href="#beranda">Beranda</a></li>
-          <li><a href="#tentang">Tentang Kami</a></li>
-          <li><a href="#katalog">Katalog</a></li>
-          <li><a href="#kontak">Kontak</a></li>
+          <li><Link href="/#beranda">Beranda</Link></li>
+          <li><Link href="/#tentang">Tentang Kami</Link></li>
+          <li><Link href="/#katalog">Katalog</Link></li>
+          <li><Link href="/#kontak">Kontak</Link></li>
         </ul>
-        <a href="/login" className="navbar__cta">
+        <Link href="/login" className="navbar__cta">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ display: "inline-block", verticalAlign: "middle", marginRight: "6px", marginTop: "-2px" }}>
             <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
             <path d="M7 11V7a5 5 0 0110 0v4"/>
           </svg>
           Login Admin
-        </a>
+        </Link>
       </div>
     </nav>
   );
