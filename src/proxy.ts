@@ -1,22 +1,8 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { jwtVerify } from "jose";
-
-const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || "fallback-secret-for-hsm-company-profile-auth-12345"
-);
+import { SESSION_COOKIE, verifySession } from "@/lib/auth";
 
 export async function proxy(request: NextRequest) {
-  const token = request.cookies.get("hsm_session")?.value;
-  let user = null;
-
-  if (token) {
-    try {
-      const { payload } = await jwtVerify(token, JWT_SECRET);
-      user = payload;
-    } catch (e) {
-      // Invalid or expired token
-    }
-  }
+  const user = await verifySession(request.cookies.get(SESSION_COOKIE)?.value);
 
   const { pathname } = request.nextUrl;
 
