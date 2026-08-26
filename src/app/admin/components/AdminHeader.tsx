@@ -1,11 +1,7 @@
 import { cookies } from "next/headers";
-import { jwtVerify } from "jose";
 import { logout } from "@/app/actions/auth";
+import { SESSION_COOKIE, verifySession } from "@/lib/auth";
 import styles from "../admin.module.css";
-
-const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || "fallback-secret-for-hsm-company-profile-auth-12345"
-);
 
 interface AdminHeaderProps {
   backHref?: string;
@@ -17,17 +13,8 @@ export default async function AdminHeader({
   backLabel = "Kembali ke Dashboard",
 }: AdminHeaderProps) {
   const cookieStore = await cookies();
-  const token = cookieStore.get("hsm_session")?.value;
-  let email = "";
-
-  if (token) {
-    try {
-      const { payload } = await jwtVerify(token, JWT_SECRET);
-      email = (payload.email as string) || "";
-    } catch {
-      // invalid token
-    }
-  }
+  const user = await verifySession(cookieStore.get(SESSION_COOKIE)?.value);
+  const email = (user?.email as string) || "";
 
   return (
     <header className={styles.header}>
