@@ -1,4 +1,6 @@
+import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import SafeImage from "@/app/components/SafeImage";
 
 /**
  * Katalog section on the landing page.
@@ -42,7 +44,7 @@ export default async function Katalog() {
             </div>
           ) : (
             manufacturers.map((mfr) => (
-              <a
+              <Link
                 key={mfr.id}
                 href={`/katalog/${mfr.id}`}
                 className="catalog__mfr-card"
@@ -51,11 +53,11 @@ export default async function Katalog() {
                 {/* Logo */}
                 <div className="catalog__mfr-logo-wrap">
                   {mfr.logoUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
+                    <SafeImage
                       src={mfr.logoUrl}
                       alt={`Logo ${mfr.name}`}
                       className="catalog__mfr-logo"
+                      fallback={<div style={{ color: "var(--color-text-muted)", fontSize: "0.875rem" }}>No Logo</div>}
                     />
                   ) : (
                     <div style={{ color: "var(--color-text-muted)", fontSize: "0.875rem" }}>No Logo</div>
@@ -76,7 +78,7 @@ export default async function Katalog() {
                     <polyline points="12 5 19 12 12 19" />
                   </svg>
                 </div>
-              </a>
+              </Link>
             ))
           )}
         </div>

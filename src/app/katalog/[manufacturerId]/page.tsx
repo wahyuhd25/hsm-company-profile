@@ -1,8 +1,12 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import Navbar from "@/app/components/Navbar";
+import SafeImage from "@/app/components/SafeImage";
 import styles from "../katalog-page.module.css";
 import type { Metadata } from "next";
+
+export const revalidate = 3600;
 
 interface Props {
   params: Promise<{ manufacturerId: string }>;
@@ -10,8 +14,9 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { manufacturerId } = await params;
-  const mfr = await prisma.manufacturer.findUnique({
-    where: { id: Number(manufacturerId) },
+  const isNumeric = !isNaN(Number(manufacturerId));
+  const mfr = await prisma.manufacturer.findFirst({
+    where: isNumeric ? { id: Number(manufacturerId) } : { slug: manufacturerId },
   });
   return {
     title: mfr
@@ -22,28 +27,25 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 export async function generateStaticParams() {
   const manufacturers = await prisma.manufacturer.findMany({
-    select: { id: true },
+    select: { slug: true },
   });
   return manufacturers.map((mfr) => ({
-    manufacturerId: String(mfr.id),
+    manufacturerId: mfr.slug,
   }));
 }
 
 export const dynamicParams = true; // Support dynamic parameters for runtime additions
 export default async function ManufacturerCatalogPage({ params }: Props) {
   const { manufacturerId } = await params;
-  const mfr = await prisma.manufacturer.findUnique({
-    where: { id: Number(manufacturerId) },
+  const isNumeric = !isNaN(Number(manufacturerId));
+  const mfr = await prisma.manufacturer.findFirst({
+    where: isNumeric ? { id: Number(manufacturerId) } : { slug: manufacturerId },
     include: {
       categories: {
-        orderBy: { id: "asc" },
+        orderBy: { sortOrder: "asc" },
         include: {
-          subCategories: {
-            include: {
-              _count: {
-                select: { products: true },
-              },
-            },
+          _count: {
+            select: { products: true },
           },
         },
       },
@@ -53,13 +55,9 @@ export default async function ManufacturerCatalogPage({ params }: Props) {
   if (!mfr) notFound();
 
   const categories = mfr.categories.map((cat) => {
-    const productCount = cat.subCategories.reduce(
-      (sum, sub) => sum + sub._count.products,
-      0
-    );
     return {
       ...cat,
-      productCount,
+      productCount: cat._count.products,
     };
   });
 
@@ -70,7 +68,7 @@ export default async function ManufacturerCatalogPage({ params }: Props) {
       {/* Breadcrumb */}
       <div className={styles.breadcrumbBar}>
         <div className={styles.breadcrumbInner}>
-          <a href="/#katalog" className={styles.bcLink}>Katalog</a>
+          <Link href="/#katalog" className={styles.bcLink}>Katalog</Link>
           <span className={styles.bcSep}>›</span>
           <span className={styles.bcCurrent}>{mfr.name}</span>
         </div>
@@ -80,8 +78,7 @@ export default async function ManufacturerCatalogPage({ params }: Props) {
       <div className={styles.pageHero}>
         <div className={styles.pageHeroInner}>
           {mfr.logoUrl && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={mfr.logoUrl} alt={`Logo ${mfr.name}`} className={styles.heroLogo} />
+            <SafeImage src={mfr.logoUrl} alt={`Logo ${mfr.name}`} className={styles.heroLogo} fallback={null} />
           )}
           <div className={styles.heroText}>
             <div className={styles.heroEyebrow}>
@@ -110,20 +107,29 @@ export default async function ManufacturerCatalogPage({ params }: Props) {
         ) : (
           <div className={styles.categoryGrid}>
             {categories.map((cat) => (
-              <a
+              <Link
                 key={cat.id}
-                href={`/katalog/${mfr.id}/${cat.id}`}
+                href={`/katalog/${mfr.slug}/${cat.slug}`}
                 className={styles.categoryCard}
                 id={`cat-card-${cat.id}`}
               >
                 {/* Image */}
                 <div className={styles.catImgWrap}>
                   {cat.imageUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
+                    <SafeImage
                       src={cat.imageUrl}
                       alt={cat.name}
                       className={styles.catImg}
+                      fallback={
+                        <div className={styles.prodImgPlaceholder}>
+                          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+                            <rect x="3" y="3" width="18" height="18" rx="2" />
+                            <circle cx="8.5" cy="8.5" r="1.5" />
+                            <polyline points="21 15 16 10 5 21" />
+                          </svg>
+                          <span>No Image</span>
+                        </div>
+                      }
                     />
                   ) : (
                     <div className={styles.prodImgPlaceholder}>
@@ -135,7 +141,7 @@ export default async function ManufacturerCatalogPage({ params }: Props) {
                       <span>No Image</span>
                     </div>
                   )}
-                  <span className={styles.catNum}>{cat.num}</span>
+                  <span className={styles.catNum}>#{cat.sortOrder || 0}</span>
                 </div>
 
                 {/* Body */}
@@ -157,7 +163,7 @@ export default async function ManufacturerCatalogPage({ params }: Props) {
                     </span>
                   </div>
                 </div>
-              </a>
+              </Link>
             ))}
           </div>
         )}
