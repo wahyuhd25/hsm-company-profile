@@ -15,9 +15,10 @@ async function updateImages() {
     for (const row of products) {
       if (row.source_image_url) {
         try {
+          const cleanId = String(row.product_id).toLowerCase().replace(/[^a-z0-9_-]/g, '-');
           await prisma.product.update({
             where: { id: row.product_id },
-            data: { imageUrl: row.source_image_url }
+            data: { imageUrl: `/images/products/${cleanId}.webp` }
           });
           count++;
         } catch (e) {
