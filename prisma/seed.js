@@ -16,7 +16,7 @@ async function main() {
       name: 'MARTHYS',
       slug: 'marthys',
       desc: 'Marthys Orthopaedic',
-      logoUrl: 'https://marthysorthopaedic.com/assets/images/logo%20web.png'
+      logoUrl: '/images/manufacturers/marthys.webp'
     },
   });
   console.log(`Manufacturer created/found: ${manufacturer.name}`);
@@ -33,7 +33,7 @@ async function main() {
             sortOrder: row.sort_order,
             isActive: row.is_active,
             manufacturerId: manufacturer.id,
-            imageUrl: `https://marthysorthopaedic.com/dist/tipe_produk/${row.sort_order}.png`
+            imageUrl: `/images/categories/${row.slug}.webp`
         },
         create: {
           id: row.category_id,
@@ -42,7 +42,7 @@ async function main() {
           sortOrder: row.sort_order || 0,
           isActive: row.is_active ?? true,
           manufacturerId: manufacturer.id,
-          imageUrl: `https://marthysorthopaedic.com/dist/tipe_produk/${row.sort_order}.png`
+          imageUrl: `/images/categories/${row.slug}.webp`
         },
       });
     }
@@ -56,6 +56,8 @@ async function main() {
     const products = xlsx.utils.sheet_to_json(prodSheet);
     for (const row of products) {
       validProductIds.add(row.product_id);
+      const cleanId = String(row.product_id).toLowerCase().replace(/[^a-z0-9_-]/g, '-');
+      const localProductImg = `/images/products/${cleanId}.webp`;
       await prisma.product.upsert({
         where: { slug: row.slug },
         update: {
@@ -68,7 +70,7 @@ async function main() {
             showInfoBlock: row.show_info_block,
             showBrand: row.show_brand,
             isActive: row.is_active,
-            imageUrl: row.source_image_url,
+            imageUrl: localProductImg,
         },
         create: {
           id: row.product_id,
@@ -82,7 +84,7 @@ async function main() {
           showInfoBlock: row.show_info_block ?? false,
           showBrand: row.show_brand ?? true,
           isActive: row.is_active ?? true,
-          imageUrl: row.source_image_url,
+          imageUrl: localProductImg,
         },
       });
     }

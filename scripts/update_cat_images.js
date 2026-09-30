@@ -6,7 +6,7 @@ async function updateCatImages() {
   let count = 0;
   for (const cat of categories) {
     // Assuming sortOrder is 1 to 16
-    const imgUrl = `https://marthysorthopaedic.com/dist/tipe_produk/${cat.sortOrder}.png`;
+    const imgUrl = `/images/categories/${cat.slug}.webp`;
     await prisma.category.update({
       where: { id: cat.id },
       data: { imageUrl: imgUrl }
