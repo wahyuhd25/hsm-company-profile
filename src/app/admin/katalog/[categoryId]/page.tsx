@@ -9,6 +9,7 @@ import {
 } from "@/app/actions/katalog";
 import AdminHeader from "../../components/AdminHeader";
 import DeleteConfirmButton from "../../components/DeleteConfirmButton";
+import ImageUploadInput from "../../components/ImageUploadInput";
 import SafeImage from "@/app/components/SafeImage";
 import styles from "../katalog-admin.module.css";
 import type { Metadata } from "next";
@@ -121,10 +122,12 @@ export default async function CategoryProductsAdminPage({ params, searchParams }
                   </select>
                 </div>
 
-                <div className={styles.formFieldCompact}>
-                  <label className={styles.formLabelCompact}>URL Foto Produk (Opsional)</label>
-                  <input className={styles.formInputCompact} type="url" name="imageUrl" defaultValue={editingProd?.imageUrl || ""} placeholder="https://..." />
-                </div>
+                <ImageUploadInput
+                  label="Foto Produk (Opsional)"
+                  nameUrl="imageUrl"
+                  nameFile="imageFile"
+                  defaultValue={editingProd?.imageUrl || ""}
+                />
                 
                 <div className={styles.formFieldCompact}>
                   <label className={styles.formLabelCompact}>Deskripsi Singkat (Opsional)</label>

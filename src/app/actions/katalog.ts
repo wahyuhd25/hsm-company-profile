@@ -5,15 +5,28 @@ import { redirect } from "next/navigation";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth";
+import sharp from "sharp";
 
-/**
- * Aksi ini dipasang langsung sebagai `action` pada elemen `<form>`, bukan
- * lewat `useActionState` — React mensyaratkan tipe kembalian `void |
- * Promise<void>` untuk pola ini. Kegagalan validasi/konflik dicatat lewat
- * console.error alih-alih dikembalikan ke form, karena belum ada UI yang
- * membaca nilai balik action saat ini.
- */
-
+/** Mengubah file upload gambar menjadi WebP Data URI terkompresi atau memakai URL jika diisi */
+async function processImage(file: File | null, fallbackUrl: string | null): Promise<string | null> {
+  if (file && file.size > 0 && typeof file.arrayBuffer === "function") {
+    try {
+      const bytes = await file.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+      const compressed = await sharp(buffer)
+        .resize(1000, 1000, { fit: "inside", withoutEnlargement: true })
+        .webp({ quality: 80 })
+        .toBuffer();
+      return `data:image/webp;base64,${compressed.toString("base64")}`;
+    } catch (err) {
+      console.error("[katalog] Error compressing image with sharp:", err);
+      const bytes = await file.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+      return `data:${file.type || "image/jpeg"};base64,${buffer.toString("base64")}`;
+    }
+  }
+  return fallbackUrl?.trim() || null;
+}
 
 /** Manufacturer induk dari sebuah kategori — dibutuhkan untuk revalidasi halaman publik. */
 async function getManufacturerIdOfCategory(categoryId: string) {
@@ -31,7 +44,9 @@ export async function createManufacturer(formData: FormData): Promise<void> {
 
   const name = (formData.get("name") as string)?.trim();
   const slug = (formData.get("slug") as string)?.trim();
-  const logoUrl = (formData.get("logoUrl") as string)?.trim() || null;
+  const logoFile = formData.get("logoFile") as File | null;
+  const rawLogoUrl = (formData.get("logoUrl") as string)?.trim() || null;
+  const logoUrl = await processImage(logoFile, rawLogoUrl);
   const desc = (formData.get("desc") as string)?.trim() || null;
 
   if (!name || !slug) {
@@ -62,7 +77,9 @@ export async function updateManufacturer(formData: FormData): Promise<void> {
   const id = Number(formData.get("id"));
   const name = (formData.get("name") as string)?.trim();
   const slug = (formData.get("slug") as string)?.trim();
-  const logoUrl = (formData.get("logoUrl") as string)?.trim() || null;
+  const logoFile = formData.get("logoFile") as File | null;
+  const rawLogoUrl = (formData.get("logoUrl") as string)?.trim() || null;
+  const logoUrl = await processImage(logoFile, rawLogoUrl);
   const desc = (formData.get("desc") as string)?.trim() || null;
 
   if (!id || !name || !slug) {
@@ -112,7 +129,9 @@ export async function createCategory(formData: FormData): Promise<void> {
   const name = (formData.get("name") as string)?.trim();
   const desc = (formData.get("desc") as string)?.trim();
   const sortOrder = Number(formData.get("sortOrder")) || 0;
-  const imageUrl = (formData.get("imageUrl") as string)?.trim() || null;
+  const imageFile = formData.get("imageFile") as File | null;
+  const rawImageUrl = (formData.get("imageUrl") as string)?.trim() || null;
+  const imageUrl = await processImage(imageFile, rawImageUrl);
 
   if (!manufacturerId || !name) {
     console.error("[katalog]", "Nama dan manufakturer wajib diisi.");
@@ -136,7 +155,9 @@ export async function updateCategory(formData: FormData): Promise<void> {
   const name = (formData.get("name") as string)?.trim();
   const desc = (formData.get("desc") as string)?.trim();
   const sortOrder = Number(formData.get("sortOrder")) || 0;
-  const imageUrl = (formData.get("imageUrl") as string)?.trim() || null;
+  const imageFile = formData.get("imageFile") as File | null;
+  const rawImageUrl = (formData.get("imageUrl") as string)?.trim() || null;
+  const imageUrl = await processImage(imageFile, rawImageUrl);
 
   if (!id || !name) {
     console.error("[katalog]", "Data tidak valid.");
@@ -176,7 +197,9 @@ export async function createProduct(formData: FormData): Promise<void> {
   const id = (formData.get("id") as string)?.trim();
   const name = (formData.get("name") as string)?.trim();
   const description = (formData.get("description") as string)?.trim() || null;
-  const imageUrl = (formData.get("imageUrl") as string)?.trim() || null;
+  const imageFile = formData.get("imageFile") as File | null;
+  const rawImageUrl = (formData.get("imageUrl") as string)?.trim() || null;
+  const imageUrl = await processImage(imageFile, rawImageUrl);
   const productKind = (formData.get("productKind") as string)?.trim() || null;
   const fixationType = (formData.get("fixationType") as string)?.trim() || null;
 
@@ -224,7 +247,9 @@ export async function updateProduct(formData: FormData): Promise<void> {
   const categoryId = formData.get("categoryId") as string;
   const name = (formData.get("name") as string)?.trim();
   const description = (formData.get("description") as string)?.trim() || null;
-  const imageUrl = (formData.get("imageUrl") as string)?.trim() || null;
+  const imageFile = formData.get("imageFile") as File | null;
+  const rawImageUrl = (formData.get("imageUrl") as string)?.trim() || null;
+  const imageUrl = await processImage(imageFile, rawImageUrl);
   const productKind = (formData.get("productKind") as string)?.trim() || null;
   const fixationType = (formData.get("fixationType") as string)?.trim() || null;
 

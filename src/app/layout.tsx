@@ -8,15 +8,62 @@ const plusJakartaSans = Plus_Jakarta_Sans({
   variable: "--font-plus-jakarta",
 });
 
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://hartindosuryamedika.com";
+
 export const metadata: Metadata = {
-  title: "PT. Hartindo Surya Medika | Distributor Produk Ortopedi Terpercaya",
+  metadataBase: new URL(baseUrl),
+  title: {
+    default: "PT. Hartindo Surya Medika | Distributor Produk Ortopedi Terpercaya",
+    template: "%s | PT. Hartindo Surya Medika",
+  },
   description:
-    "PT. Hartindo Surya Medika mendukung tenaga medis dengan produk ortopedi berkualitas dan layanan yang responsif.",
-  keywords: "ortopedi, alat medis, hartindo surya medika, HSM, distribusi medis, Makassar",
+    "Distributor resmi implan dan instrumen ortopedi terpercaya. Mendukung tenaga medis rumah sakit dengan produk berkualitas tinggi, berstandar medis, dan layanan cepat tanggap.",
+  keywords: [
+    "ortopedi",
+    "implan ortopedi",
+    "alat medis",
+    "hartindo surya medika",
+    "HSM",
+    "distributor medis Makassar",
+    "spinal fixation",
+    "locking plate",
+    "trauma implants",
+  ],
+  alternates: {
+    canonical: "./",
+  },
   openGraph: {
-    title: "PT. Hartindo Surya Medika",
+    title: "PT. Hartindo Surya Medika | Distributor Produk Ortopedi Terpercaya",
     description: "Mendukung tenaga medis dengan produk ortopedi berkualitas dan layanan yang responsif.",
+    url: baseUrl,
+    siteName: "PT. Hartindo Surya Medika",
+    locale: "id_ID",
     type: "website",
+    images: [
+      {
+        url: "/hsm-building.png",
+        width: 1200,
+        height: 630,
+        alt: "PT. Hartindo Surya Medika",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "PT. Hartindo Surya Medika | Distributor Produk Ortopedi Terpercaya",
+    description: "Mendukung tenaga medis dengan produk ortopedi berkualitas dan layanan yang responsif.",
+    images: ["/hsm-building.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
   },
 };
 

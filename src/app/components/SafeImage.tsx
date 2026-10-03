@@ -26,6 +26,7 @@ export default function SafeImage({
 
   if (failed || !src) return <>{fallback}</>;
 
+  const isDataUrl = src.startsWith("data:");
   const isExternal = src.startsWith("http://") || src.startsWith("https://");
   const isAllowedHost = src.includes("marthysorthopaedic.com");
 
@@ -39,7 +40,7 @@ export default function SafeImage({
       loading={priority ? undefined : loading}
       priority={priority}
       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-      unoptimized={isExternal && !isAllowedHost}
+      unoptimized={isDataUrl || (isExternal && !isAllowedHost)}
       style={{
         opacity: loaded ? 1 : 0.6,
         transition: "opacity 0.25s ease-in-out",
