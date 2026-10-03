@@ -10,6 +10,7 @@ import {
 } from "@/app/actions/katalog";
 import AdminHeader from "../components/AdminHeader";
 import DeleteConfirmButton from "../components/DeleteConfirmButton";
+import ImageUploadInput from "../components/ImageUploadInput";
 import SafeImage from "@/app/components/SafeImage";
 import styles from "./katalog-admin.module.css";
 import type { Metadata } from "next";
@@ -104,10 +105,12 @@ export default async function CatalogMainAdminPage({ searchParams }: Props) {
                   <label className={styles.formLabelCompact}>Slug URL</label>
                   <input className={styles.formInputCompact} type="text" name="slug" defaultValue={editingMfr?.slug || ""} placeholder="marthys" required />
                 </div>
-                <div className={styles.formFieldCompact}>
-                  <label className={styles.formLabelCompact}>URL Logo</label>
-                  <input className={styles.formInputCompact} type="url" name="logoUrl" defaultValue={editingMfr?.logoUrl || ""} placeholder="https://..." />
-                </div>
+                <ImageUploadInput
+                  label="Logo Manufakturer (Opsional)"
+                  nameUrl="logoUrl"
+                  nameFile="logoFile"
+                  defaultValue={editingMfr?.logoUrl || ""}
+                />
                 <div className={styles.formFieldCompact}>
                   <label className={styles.formLabelCompact}>Deskripsi</label>
                   <textarea className={styles.formTextareaCompact} name="desc" defaultValue={editingMfr?.desc || ""} placeholder="Deskripsi singkat..." rows={2} />
@@ -191,10 +194,14 @@ export default async function CatalogMainAdminPage({ searchParams }: Props) {
                         <label className={styles.formLabel}>Nama Kategori</label>
                         <input className={styles.formInput} type="text" name="name" defaultValue={editingCat?.name || ""} placeholder="Nama kategori" required />
                       </div>
-                      <div className={styles.formField}>
-                        <label className={styles.formLabel}>URL Gambar Kategori</label>
-                        <input className={styles.formInput} type="url" name="imageUrl" defaultValue={editingCat?.imageUrl || ""} placeholder="https://..." />
-                      </div>
+                    </div>
+                    <div style={{ marginTop: "1rem" }}>
+                      <ImageUploadInput
+                        label="Gambar Kategori (Opsional)"
+                        nameUrl="imageUrl"
+                        nameFile="imageFile"
+                        defaultValue={editingCat?.imageUrl || ""}
+                      />
                     </div>
                     <div className={styles.formGrid2} style={{ marginTop: "1rem" }}>
                       <div className={styles.formFieldFull}>

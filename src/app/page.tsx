@@ -7,8 +7,28 @@ import Kontak from "./components/Kontak";
 export const revalidate = 3600; // Cache for 1 hour (ISR)
 
 export default function Home() {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "MedicalBusiness",
+    name: "PT. Hartindo Surya Medika",
+    url: "https://hartindosuryamedika.com",
+    logo: "https://hartindosuryamedika.com/hsm-building.png",
+    description:
+      "Distributor produk implan dan instrumen medis ortopedi berkualitas dan terpercaya di Indonesia.",
+    telephone: "+628114456789",
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Makassar",
+      addressCountry: "ID",
+    },
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* ── Navigation ── */}
       <Navbar />
 

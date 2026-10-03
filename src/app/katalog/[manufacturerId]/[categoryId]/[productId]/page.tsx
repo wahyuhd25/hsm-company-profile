@@ -17,9 +17,30 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   
   if (!product) return { title: "Produk Tidak Ditemukan" };
   
+  const title = `${product.name} (${product.id}) | PT. Hartindo Surya Medika`;
+  const desc = product.description || `Spesifikasi detail produk ${product.name} (Kode: ${product.id}). Distributor implan & instrumen medis ortopedi resmi PT. Hartindo Surya Medika.`;
+  const imgUrl = product.imageUrl || "/hsm-building.png";
+
   return {
-    title: `${product.name} | PT. Hartindo Surya Medika`,
-    description: product.description || `Detail spesifikasi produk ${product.name}`,
+    title,
+    description: desc,
+    openGraph: {
+      title,
+      description: desc,
+      type: "website",
+      images: [
+        {
+          url: imgUrl,
+          alt: product.name,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description: desc,
+      images: [imgUrl],
+    },
   };
 }
 
@@ -82,8 +103,35 @@ export default async function ProductDetailPage({ params }: Props) {
   const hasImplantSpecs = product.implantSpecs && product.implantSpecs.length > 0;
   const hasComponents = product.components && product.components.length > 0;
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    image: product.imageUrl || undefined,
+    description: product.description || `Produk implan/instrumen medis ${product.name}`,
+    sku: product.id,
+    brand: {
+      "@type": "Brand",
+      name: manufacturer.name,
+    },
+    offers: {
+      "@type": "Offer",
+      availability: "https://schema.org/InStock",
+      price: "0",
+      priceCurrency: "IDR",
+      seller: {
+        "@type": "Organization",
+        name: "PT. Hartindo Surya Medika",
+      },
+    },
+  };
+
   return (
     <div className={styles.page}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* ── Breadcrumb Bar ── */}
       <div className={styles.breadcrumbBar}>
         <div className={styles.breadcrumbInner}>
