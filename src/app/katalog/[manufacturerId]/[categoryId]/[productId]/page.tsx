@@ -23,34 +23,61 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
+export async function generateStaticParams() {
+  const catProducts = await prisma.categoryToProduct.findMany({
+    where: {
+      product: { isActive: true },
+      category: { manufacturer: { isNot: null } },
+    },
+    select: {
+      productId: true,
+      category: {
+        select: {
+          slug: true,
+          manufacturer: {
+            select: { slug: true },
+          },
+        },
+      },
+    },
+  });
+
+  return catProducts
+    .filter((cp) => cp.category.manufacturer !== null)
+    .map((cp) => ({
+      manufacturerId: cp.category.manufacturer!.slug,
+      categoryId: cp.category.slug,
+      productId: cp.productId,
+    }));
+}
+
+export const dynamicParams = true;
+
 export default async function ProductDetailPage({ params }: Props) {
   const { manufacturerId, categoryId, productId } = await params;
 
-  // 1. Fetch Manufacturer & Category for Breadcrumbs
-  const manufacturer = await prisma.manufacturer.findUnique({
-    where: { slug: manufacturerId },
-  });
-
-  const category = await prisma.category.findUnique({
-    where: { slug: categoryId },
-  });
-
-  if (!manufacturer || !category) notFound();
-
-  // 2. Fetch Product with ImplantSpecs & Components
-  const product = await prisma.product.findUnique({
-    where: { id: productId },
-    include: {
-      implantSpecs: {
-        orderBy: { sortOrder: "asc" }
+  // Fetch Manufacturer, Category, and Product concurrently in parallel
+  const [manufacturer, category, product] = await Promise.all([
+    prisma.manufacturer.findUnique({
+      where: { slug: manufacturerId },
+    }),
+    prisma.category.findUnique({
+      where: { slug: categoryId },
+    }),
+    prisma.product.findUnique({
+      where: { id: productId },
+      include: {
+        implantSpecs: {
+          orderBy: { sortOrder: "asc" },
+        },
+        components: {
+          orderBy: { sortOrder: "asc" },
+        },
       },
-      components: {
-        orderBy: { sortOrder: "asc" }
-      }
-    }
-  });
+    }),
+  ]);
 
-  if (!product) notFound();
+  if (!manufacturer || !category || !product) notFound();
 
   const hasImplantSpecs = product.implantSpecs && product.implantSpecs.length > 0;
   const hasComponents = product.components && product.components.length > 0;
@@ -112,9 +139,37 @@ export default async function ProductDetailPage({ params }: Props) {
               )}
             </div>
             
-            <Link href={`/katalog/${manufacturer.slug}/${category.slug}`} className={styles.btnBackMain} style={{ marginTop: "2rem", display: "inline-flex" }}>
-              ← Kembali ke Kategori
-            </Link>
+            <div style={{ marginTop: "2rem", display: "flex", gap: "1rem", flexWrap: "wrap", alignItems: "center" }}>
+              <Link href={`/katalog/${manufacturer.slug}/${category.slug}`} className={styles.btnBackMain}>
+                ← Kembali ke Kategori
+              </Link>
+              <a
+                href={`https://wa.me/628114456789?text=${encodeURIComponent(
+                  `Halo PT. Hartindo Surya Medika, saya ingin menanyakan ketersediaan dan informasi untuk produk:\n\n*${product.name}*\nKode Produk: ${product.id}\nManufakturer: ${manufacturer.name}\n\nMohon informasi spesifikasi dan penawarannya. Terima kasih.`
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  padding: "0.75rem 1.5rem",
+                  backgroundColor: "#16a34a",
+                  color: "#ffffff",
+                  borderRadius: "8px",
+                  fontWeight: 600,
+                  fontSize: "0.875rem",
+                  textDecoration: "none",
+                  boxShadow: "0 4px 14px rgba(22, 163, 74, 0.3)",
+                  transition: "all 0.2s ease",
+                }}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.311.045-.698.077-1.922-.428-1.564-.646-2.572-2.228-2.65-2.332-.078-.104-.633-.843-.633-1.608 0-.766.4-1.144.542-1.299.143-.156.312-.195.416-.195.104 0 .208.001.299.006.095.006.222-.036.347.264.129.311.442 1.079.481 1.157.039.078.065.169.013.273-.052.104-.078.169-.156.26-.078.091-.164.204-.234.273-.078.078-.16.163-.069.319.091.156.404.667.868 1.079.598.531 1.103.696 1.259.774.156.078.247.065.338-.039.091-.104.39-.455.494-.611.104-.156.208-.13.347-.078.139.052.883.416 1.035.493.152.078.254.117.291.182.037.065.037.378-.107.783z"/>
+                </svg>
+                Tanya / Pesan via WhatsApp
+              </a>
+            </div>
           </div>
         </div>
 

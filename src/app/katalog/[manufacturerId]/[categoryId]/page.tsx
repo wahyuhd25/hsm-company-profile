@@ -48,37 +48,34 @@ export const dynamicParams = true; // Support dynamic parameters for runtime add
 
 export default async function CategoryProductsPage({ params }: Props) {
   const { manufacturerId, categoryId } = await params;
-
   const isNumericMfr = !isNaN(Number(manufacturerId));
-  const mfr = await prisma.manufacturer.findFirst({
-    where: isNumericMfr ? { id: Number(manufacturerId) } : { slug: manufacturerId },
-  });
 
-  const cat = await prisma.category.findFirst({
-    where: {
-      OR: [
-        { id: categoryId },
-        { slug: categoryId }
-      ]
-    }
-  });
+  // Fetch manufacturer and category with its products in parallel
+  const [mfr, cat] = await Promise.all([
+    prisma.manufacturer.findFirst({
+      where: isNumericMfr ? { id: Number(manufacturerId) } : { slug: manufacturerId },
+    }),
+    prisma.category.findFirst({
+      where: {
+        OR: [
+          { id: categoryId },
+          { slug: categoryId },
+        ],
+      },
+      include: {
+        products: {
+          where: { product: { isActive: true } },
+          include: { product: true },
+          orderBy: { sortOrder: "asc" },
+        },
+      },
+    }),
+  ]);
 
   if (!mfr || !cat) notFound();
 
-  // Fetch CategoryToProduct to get the fixationType for each product
-  const catProducts = await prisma.categoryToProduct.findMany({
-    where: {
-      categoryId: cat.id,
-      product: { isActive: true },
-    },
-    include: {
-      product: true,
-    },
-    orderBy: { sortOrder: "asc" },
-  });
-
   // Map to a combined product object for the client component
-  const products = catProducts.map((cp) => ({
+  const products = cat.products.map((cp) => ({
     ...cp.product,
     fixationType: cp.fixationType,
   }));

@@ -20,6 +20,9 @@ export const metadata: Metadata = {
   },
 };
 
+import { Suspense } from "react";
+import TopLoader from "./components/TopLoader";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -27,7 +30,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="id" className={plusJakartaSans.variable} suppressHydrationWarning>
-      <body suppressHydrationWarning>{children}</body>
+      <body suppressHydrationWarning>
+        <Suspense fallback={null}>
+          <TopLoader />
+        </Suspense>
+        {children}
+      </body>
     </html>
   );
 }
