@@ -45,3 +45,7 @@ AGENTS.md
 CLAUDE.md
 .agents/
 .gemini/
+
+# College / Academic Reports (Local only)
+LAPORAN_*.md
+LAPORAN_FITUR_WEBSITE.md
