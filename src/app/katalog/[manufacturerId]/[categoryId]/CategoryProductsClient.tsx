@@ -38,6 +38,7 @@ interface Props {
 export default function CategoryProductsClient({ mfr, cat, products }: Props) {
   const [activeImage, setActiveImage] = useState<{ url: string; name: string } | null>(null);
   const [filter, setFilter] = useState<'unlocking' | 'locking'>('unlocking');
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleCardClick = (imageUrl: string | null, name: string) => {
     if (imageUrl) {
@@ -51,6 +52,18 @@ export default function CategoryProductsClient({ mfr, cat, products }: Props) {
   const showTabs = hasLocking && hasUnlocking;
 
   const filteredProducts = products.filter(p => {
+    // Search query match
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      const matchName = p.name.toLowerCase().includes(q);
+      const matchId = p.id.toLowerCase().includes(q);
+      const matchKind = p.productKind?.toLowerCase().includes(q);
+      const matchDesc = p.description?.toLowerCase().includes(q);
+      if (!matchName && !matchId && !matchKind && !matchDesc) {
+        return false;
+      }
+    }
+
     if (!showTabs) return true; // Show all if tabs aren't needed
     if (filter === 'locking') {
       return p.fixationType === 'locking'; // Only locking
@@ -110,6 +123,66 @@ export default function CategoryProductsClient({ mfr, cat, products }: Props) {
           <span className={styles.sectionLabelText}>Daftar Produk</span>
           <span className={styles.sectionLabelLine} />
           <span className={styles.sectionLabelText}>{filteredProducts.length} Item</span>
+        </div>
+
+        {/* Real-time Search Input */}
+        <div style={{ maxWidth: "460px", margin: "0 auto 2rem auto", position: "relative" }}>
+          <input
+            type="text"
+            placeholder="Cari nama produk atau kode (contoh: MRT)..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={{
+              width: "100%",
+              padding: "0.75rem 1rem 0.75rem 2.6rem",
+              backgroundColor: "var(--color-bg-secondary)",
+              border: "1px solid var(--color-border)",
+              borderRadius: "8px",
+              color: "var(--color-text-primary)",
+              fontSize: "0.875rem",
+              outline: "none",
+              transition: "border-color 0.2s ease, box-shadow 0.2s ease",
+            }}
+          />
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            style={{
+              position: "absolute",
+              left: "14px",
+              top: "50%",
+              transform: "translateY(-50%)",
+              color: "var(--color-text-muted)",
+              pointerEvents: "none",
+            }}
+          >
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery("")}
+              style={{
+                position: "absolute",
+                right: "12px",
+                top: "50%",
+                transform: "translateY(-50%)",
+                background: "none",
+                border: "none",
+                color: "var(--color-text-muted)",
+                cursor: "pointer",
+                padding: "4px",
+                fontSize: "14px",
+              }}
+              aria-label="Hapus pencarian"
+            >
+              ✕
+            </button>
+          )}
         </div>
 
         {/* Locking / Unlocking Tabs */}

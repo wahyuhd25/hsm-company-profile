@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { cookies } from "next/headers";
 import { logout } from "@/app/actions/auth";
 import { SESSION_COOKIE, verifySession } from "@/lib/auth";
@@ -29,13 +30,13 @@ export default async function AdminHeader({
       </div>
 
       <div className={styles.headerRight}>
-        <a href={backHref} className={styles.backLink}>
+        <Link href={backHref} className={styles.backLink}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <line x1="19" y1="12" x2="5" y2="12"/>
             <polyline points="12 19 5 12 12 5"/>
           </svg>
           {backLabel}
-        </a>
+        </Link>
         <div className={styles.userBadge}>
           <div className={styles.userAvatar}>
             {email?.[0]?.toUpperCase() ?? "A"}

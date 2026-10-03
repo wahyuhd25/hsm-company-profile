@@ -46,7 +46,7 @@ export default async function Katalog() {
             manufacturers.map((mfr) => (
               <Link
                 key={mfr.id}
-                href={`/katalog/${mfr.id}`}
+                href={`/katalog/${mfr.slug || mfr.id}`}
                 className="catalog__mfr-card"
                 id={`mfr-card-${mfr.id}`}
               >
